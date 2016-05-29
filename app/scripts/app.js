@@ -1,3 +1,5 @@
+import { Asdf } from './second';
+
 /*
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -77,5 +79,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   app.closeDrawer = function() {
     app.$.paperDrawerPanel.closeDrawer();
   };
+
+
+
+  window.Asdf = Asdf;
 
 })(document);

@@ -27,6 +27,7 @@ var historyApiFallback = require('connect-history-api-fallback');
 var packageJson = require('./package.json');
 var crypto = require('crypto');
 var ensureFiles = require('./tasks/ensure-files.js');
+var babel = require('rollup-plugin-babel');
 
 // var ghPages = require('gulp-gh-pages');
 
@@ -157,13 +158,13 @@ gulp.task('fonts', function() {
 // Scan your HTML for assets & optimize them
 gulp.task('html', function() {
   return optimizeHtmlTask(
-    ['app/**/*.html', '!app/{elements,test,bower_components}/**/*.html'],
+    ['dist/**/*.html', '!dist/{elements,test,bower_components}/**/*.html'],
     dist());
 });
 
 // Vulcanize granular configuration
 gulp.task('vulcanize', function() {
-  return gulp.src('app/elements/elements.html')
+  return gulp.src('.tmp/elements/elements.html')
     .pipe($.vulcanize({
       stripComments: true,
       inlineCss: true,
@@ -214,7 +215,7 @@ gulp.task('clean', function() {
 });
 
 // Watch files for changes & reload
-gulp.task('serve', ['styles'], function() {
+gulp.task('serve', ['styles', 'js'], function() {
   browserSync({
     port: 5000,
     notify: false,
@@ -237,9 +238,9 @@ gulp.task('serve', ['styles'], function() {
     }
   });
 
-  gulp.watch(['app/**/*.html', '!app/bower_components/**/*.html'], reload);
+  gulp.watch(['app/**/*.html', '!app/bower_components/**/*.html'], ['js', reload]);
   gulp.watch(['app/styles/**/*.css'], ['styles', reload]);
-  gulp.watch(['app/scripts/**/*.js'], reload);
+  gulp.watch(['app/scripts/**/*.js'], ['js', reload]);
   gulp.watch(['app/images/**/*'], reload);
 });
 
@@ -270,7 +271,9 @@ gulp.task('serve:dist', ['default'], function() {
 gulp.task('default', ['clean'], function(cb) {
   // Uncomment 'cache-config' if you are going to use service workers.
   runSequence(
+    'bowertotmp',
     ['ensureFiles', 'copy', 'styles'],
+    'js',
     ['images', 'fonts', 'html'],
     'vulcanize', // 'cache-config',
     cb);
@@ -306,3 +309,29 @@ try {
 } catch (err) {
   // Do nothing
 }
+
+// Transpile all JS to ES5.
+gulp.task('js', function() {
+  return gulp.src(['app/**/*.{js,html}', '!app/bower_components/**/*'])
+   .pipe($.sourcemaps.init())
+   .pipe($.if('*.js',
+      $.if('**/scripts/**/*.js',
+        $.rollup({
+          entry: 'app/scripts/app.js',
+          // sourceMap: true,
+          plugins: [babel()],
+          format: 'umd',
+          moduleName: 'app'
+        })
+      )
+   ))
+   .pipe($.sourcemaps.write('.'))
+   .pipe(gulp.dest('.tmp/'))
+   .pipe(gulp.dest(dist()));
+});
+
+// Copy all bower_components over to help js task and vulcanize work together
+gulp.task('bowertotmp', function() {
+return gulp.src(['app/bower_components/**/*'])
+  .pipe(gulp.dest('.tmp/bower_components/'));
+});
