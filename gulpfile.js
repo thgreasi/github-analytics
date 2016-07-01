@@ -310,21 +310,32 @@ try {
   // Do nothing
 }
 
-// Transpile all JS to ES5.
-gulp.task('js', function() {
-  return gulp.src(['app/**/*.{js,html}', '!app/bower_components/**/*'])
+gulp.task('js', ['js-rollup', 'js-babel']);
+
+// Rollup all app scripts
+gulp.task('js-rollup', function() {
+  return gulp.src(['app/scripts/app.js'])
    .pipe($.sourcemaps.init())
-   .pipe($.if('*.js',
-      $.if('**/scripts/**/*.js',
-        $.rollup({
-          entry: 'app/scripts/app.js',
-          // sourceMap: true,
-          plugins: [babel()],
-          format: 'umd',
-          moduleName: 'app'
-        })
-      )
-   ))
+   .pipe($.rollup({
+      entry: 'app/scripts/app.js',
+      // sourceMap: true,
+      plugins: [babel()],
+      format: 'umd',
+      moduleName: 'app'
+   }))
+   .pipe($.sourcemaps.write('.'))
+   .pipe(gulp.dest('.tmp/scripts'))
+   .pipe(gulp.dest(dist()));
+});
+
+// Transpile all JS to ES5.
+gulp.task('js-babel', function() {
+  return gulp.src(['app/**/*.{js,html}', '!app/scripts/**/*.js', '!app/bower_components/**/*'])
+   .pipe($.sourcemaps.init())
+   .pipe($.if('*.html', $.crisper({scriptInHead: false}))) // Extract JS from .html files
+   .pipe($.if('*.js', $.babel({
+      presets: ['es2015']
+    })))
    .pipe($.sourcemaps.write('.'))
    .pipe(gulp.dest('.tmp/'))
    .pipe(gulp.dest(dist()));
