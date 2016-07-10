@@ -319,7 +319,9 @@ gulp.task('js-rollup', function() {
    .pipe($.rollup({
       entry: 'app/scripts/app.js',
       // sourceMap: true,
-      plugins: [babel()],
+      plugins: [babel({
+        presets: ['es2015-rollup'],
+      })],
       format: 'umd',
       moduleName: 'app'
    }))
