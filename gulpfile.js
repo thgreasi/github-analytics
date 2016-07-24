@@ -138,7 +138,7 @@ gulp.task('copy', function() {
   // Copy over only the bower_components we need
   // These are things which cannot be vulcanized
   var bower = gulp.src([
-    'app/bower_components/{webcomponentsjs,platinum-sw,sw-toolbox,promise-polyfill,jQuery,localforage}/**/*'
+    'app/bower_components/{webcomponentsjs,platinum-sw,sw-toolbox,promise-polyfill,jQuery,localforage,polymer-localforage}/**/*'
   ]).pipe(gulp.dest(dist('bower_components')));
 
   // Copy over only the node modules we need

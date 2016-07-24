@@ -10,6 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/polymer-localforage/polymer-localforage.html">
 
 <dom-module id="my-greeting">
   <template>
@@ -23,6 +24,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         @apply(--paper-font-body2);
       }
     </style>
+
+    <polymer-localforage id="greeting-storage" name="greeting" use-raw value="{{greeting}}"></polymer-localforage>
 
     <h1 class="page-title" tabindex="-1">{{greeting}}</h1>
     <label for="greeting-input">Update text to change the greeting.</label>
@@ -40,9 +43,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         properties: {
           greeting: {
             type: String,
-            value: 'Welcome!',
-            notify: true
+            // value: 'Welcome!',
+            notify: true,
+            observer: '_greetingChanged'
           }
+        },
+
+        _greetingChanged: function () {
+          if (this.greeting === null) {
+            this.greeting = '';
+          }
+        },
+        
+        ready: function() {
+          this.$['greeting-storage'].load();
         }
       });
     })();
