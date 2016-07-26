@@ -6,10 +6,34 @@ export class GithubService {
         this.baseUrl = 'https://api.github.com/';
     }
 
+    getUserInfo (username) {
+        var promise = $.get(this.baseUrl + `users/${username}`);
+        // return promise;
+        return Promise.resolve(promise).then(function(data) {
+            console.log(data);
+            return data;
+        }).then(null, function (err) {
+            console.log(err);
+            return err;
+        });
+    }
+
+    getUserOrgs (username) {
+        var promise = $.get(this.baseUrl + `users/${username}/orgs`);
+        // return promise;
+        return Promise.resolve(promise).then(function(data) {
+            console.log(data);
+            return data;
+        }).then(null, function (err) {
+            console.log(err);
+            return err;
+        });
+    }
+
     getUserRepos (username) {
         var promise = $.get(this.baseUrl + `users/${username}/repos`);
         // return promise;
-        return promise.then(function (repos) {
+        return Promise.resolve(promise).then(function (repos) {
             return repos.map(function (repo) {
                 return {
                     id: repo.id,
@@ -28,18 +52,22 @@ export class GithubService {
             });
         }).then(function(data) {
             console.log(data);
+            return data;
         }).then(null, function (err) {
             console.log(err);
+            return err;
         });
     }
 
     getRepoDetails (username, reponame) {
         var promise = $.get(this.baseUrl + `repos/${username}/${reponame}`);
         // the only extras are: network_count & subscribers_count
-        return promise.then(function (repo) {
+        return Promise.resolve(promise).then(function (repo) {
             console.log(repo);
+            return repo;
         }).then(null, function (err) {
             console.log(err);
+            return err;
         });
     }
 }

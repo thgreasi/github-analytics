@@ -45,12 +45,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <div class="clearfix">
             <span>{{item.name}}</span>
             <span class="floatright">
-              <span>{{item.month_downloads}}</span>
-              <iron-icon icon="star"></iron-icon>
+              <span>{{item.downloads}}</span>
+              <iron-icon icon="file-download"></iron-icon>
             </span>
             <span class="floatright">
-              <span>{{item.stars}}</span>
-              <iron-icon icon="file-download"></iron-icon>
+              <span>{{item.stargazers_count}}</span>
+              <iron-icon icon="star"></iron-icon>
             </span>
           </div>
         </li>
@@ -74,14 +74,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         ready: function() {
 
-          this.items = [
-            'Responsive Web App boilerplate',
-            'Iron Elements and Paper Elements',
-            'End-to-end Build Tooling (including Vulcanize)',
-            'Unit testing with Web Component Tester',
-            'Routing with Page.js',
-            'Offline support with the Platinum Service Worker Elements'
-          ];
+          // this.items = [
+          //   'Responsive Web App boilerplate',
+          //   'Iron Elements and Paper Elements',
+          //   'End-to-end Build Tooling (including Vulcanize)',
+          //   'Unit testing with Web Component Tester',
+          //   'Routing with Page.js',
+          //   'Offline support with the Platinum Service Worker Elements'
+          // ];
         }
       });
     })();

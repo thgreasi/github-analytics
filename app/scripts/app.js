@@ -63,5 +63,37 @@ app.closeDrawer = function() {
 
 
 
-window.githubService = new GithubService();
-window.npmService = new NpmService();
+var githubService = window.githubService = new GithubService();
+var npmService = window.npmService = new NpmService();
+
+app.repos = [];
+app.loadedPromise.then(() => {
+
+  var userReposPromise = githubService.getUserRepos('thgreasi');
+  var orgsPromise = githubService.getUserOrgs('thgreasi');
+
+  var overallPromises = [processRepoInfos(userReposPromise)];
+
+  overallPromises.push(orgsPromise.then(orgs => {
+    return Promise.all(orgs.map(o => processRepoInfos(githubService.getUserRepos(o.login))));
+  }));
+
+  return Promise.all([overallPromises]);
+});
+
+function processRepoInfos (reposPromise) {
+  return reposPromise.then(repos => {
+      app.repos.push.apply(app.repos, repos);
+
+      return Promise.all(repos.map(repo => {
+        npmService.getDownloadCountsLastMonth(repo.name).then(dls => {
+          repo.downloads = dls.downloads;
+          app.set('repos', app.repos.slice());
+          // var oldRepos = app.repos.slice();
+          // app.set('repos', []);
+          // setTimeout(() => app.set('repos', oldRepos));
+          return dls;
+        }).catch(() => {});
+      }));
+    });
+}
