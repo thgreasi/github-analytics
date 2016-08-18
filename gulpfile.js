@@ -137,14 +137,27 @@ gulp.task('copy', function() {
 
   // Copy over only the bower_components we need
   // These are things which cannot be vulcanized
+  var bowerFolders = [
+    'webcomponentsjs',
+    'platinum-sw',
+    'sw-toolbox',
+    'promise-polyfill',
+    'jQuery',
+    'localforage',
+    'polymer-localforage'
+  ].join(',');
   var bower = gulp.src([
-    'app/bower_components/{webcomponentsjs,platinum-sw,sw-toolbox,promise-polyfill,jQuery,localforage,polymer-localforage}/**/*'
+    'app/bower_components/{' + bowerFolders + '}/**/*'
   ]).pipe(gulp.dest(dist('bower_components')));
 
   // Copy over only the node modules we need
   // These are things which cannot be vulcanized
+  var nodeFolders = [
+    '@reactivex',
+    'nop' // just a filler so that {} works
+  ].join(',');
   var node_modules = gulp.src([
-    'node_modules/{@reactivex,nop}/**/*'
+    'node_modules/{' + nodeFolders + '}/**/*'
   ]).pipe(gulp.dest(dist('node_modules')));
 
   return merge(app, bower, node_modules)
@@ -164,8 +177,14 @@ gulp.task('fonts', function() {
 
 // Scan your HTML for assets & optimize them
 gulp.task('html', function() {
+  var excludedFolders = [
+    'elements',
+    'test',
+    'bower_components',
+    'node_modules'
+  ].join(',');
   return optimizeHtmlTask(
-    ['dist/**/*.html', '!dist/{elements,test,bower_components,node_modules}/**/*.html'],
+    ['dist/**/*.html', '!dist/{' + excludedFolders + '}/**/*.html'],
     dist());
 });
 
@@ -342,7 +361,11 @@ gulp.task('js-rollup', function() {
 
 // Transpile all JS to ES5.
 gulp.task('js-babel', function() {
-  return gulp.src(['app/**/*.{js,html}', '!app/scripts/**/*.js', '!app/bower_components/**/*'])
+  return gulp.src([
+      'app/**/*.{js,html}',
+      '!app/scripts/**/*.js',
+      '!app/bower_components/**/*'
+    ])
    .pipe($.sourcemaps.init())
    .pipe($.if('*.html', $.crisper({scriptInHead: false}))) // Extract JS from .html files
    .pipe($.if('*.js', $.babel({
