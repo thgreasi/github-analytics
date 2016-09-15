@@ -1,19 +1,19 @@
 import { mockUserData, mockUserOrgsData, mockRepoData } from './GithubServiceMockData';
 
 export class GithubService {
-	getUserInfo (username) {
+	static getUserInfo (username) {
         return Promise.resolve(mockUserData[username]);
     }
 
-    getUserOrgs (username) {
+    static getUserOrgs (username) {
         return Promise.resolve(mockUserOrgsData[username] || []);
     }
 
-    getUserRepos (username) {
+    static getUserRepos (username) {
         return Promise.resolve(mockRepoData[username] || []);
     }
 
-    getRepoDetails (username, reponame) {
+    static getRepoDetails (username, reponame) {
         return this.getUserRepos(username)
         	.then(repos => {
         		return repos.filter(r => r.name === reponame).shift();

@@ -62,11 +62,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       setFocus(app.route);
     });
 
-    page('/contact', function() {
-      app.route = 'contact';
-      setFocus(app.route);
-    });
-
     // 404
     page('*', function() {
       app.$.toast.text = 'Can\'t find: ' + window.location.href  + '. Redirected you to Home Page';

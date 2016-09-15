@@ -24,17 +24,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       ul {
         list-style: none;
+        padding-left: 0;
+        margin-left: 0;
       }
 
-      .clearfix:before,
-      .clearfix:after {
-        display: table;
-        content: " ";
-        clear: both;
-      }
-
-      .floatright {
-        float: right;
+      repo-list-item {
+        padding-left: 0.7em;
+        border-left: 3px solid #61de61;
+        margin: 0.5em 0;
       }
 
     </style>
@@ -42,17 +39,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <ul>
       <template is="dom-repeat" items="{{items}}">
         <li>
-          <div class="clearfix">
-            <span>{{item.name}}</span>
-            <span class="floatright">
-              <span>{{item.downloads}}</span>
-              <iron-icon icon="file-download"></iron-icon>
-            </span>
-            <span class="floatright">
-              <span>{{item.stargazers_count}}</span>
-              <iron-icon icon="star"></iron-icon>
-            </span>
-          </div>
+          <repo-list-item item={{item}}></repo-list-item>
         </li>
       </template>
     </ul>

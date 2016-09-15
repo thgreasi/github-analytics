@@ -1,5 +1,5 @@
 export var mockUserData = {};
-mockRepoData.thgreasi = {
+mockUserData.thgreasi = {
   "login": "thgreasi",
   "id": 1295829,
   "avatar_url": "https://avatars.githubusercontent.com/u/1295829?v=3",

@@ -1,13 +1,11 @@
 import $ from 'jquery';
 import Rx from 'Rx';
 
+const BASE_URL = 'https://api.github.com/';
+
 export class GithubService {
-    constructor () {
-        this.baseUrl = 'https://api.github.com/';
-    }
-
-    getUserInfo (username) {
-        var promise = $.get(this.baseUrl + `users/${username}`);
+    static getUserInfo (username) {
+        var promise = $.get(BASE_URL + `users/${username}`);
         // return promise;
         return Promise.resolve(promise).then(function(data) {
             console.log(data);
@@ -18,8 +16,8 @@ export class GithubService {
         });
     }
 
-    getUserOrgs (username) {
-        var promise = $.get(this.baseUrl + `users/${username}/orgs`);
+    static getUserOrgs (username) {
+        var promise = $.get(BASE_URL + `users/${username}/orgs`);
         // return promise;
         return Promise.resolve(promise).then(function(data) {
             console.log(data);
@@ -30,8 +28,8 @@ export class GithubService {
         });
     }
 
-    getUserRepos (username) {
-        var promise = $.get(this.baseUrl + `users/${username}/repos`);
+    static getUserRepos (username) {
+        var promise = $.get(BASE_URL + `users/${username}/repos`);
         // return promise;
         return Promise.resolve(promise).then(function (repos) {
             return repos.map(function (repo) {
@@ -59,8 +57,8 @@ export class GithubService {
         });
     }
 
-    getRepoDetails (username, reponame) {
-        var promise = $.get(this.baseUrl + `repos/${username}/${reponame}`);
+    static getRepoDetails (username, reponame) {
+        var promise = $.get(BASE_URL + `repos/${username}/${reponame}`);
         // the only extras are: network_count & subscribers_count
         return Promise.resolve(promise).then(function (repo) {
             console.log(repo);

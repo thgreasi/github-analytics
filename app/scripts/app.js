@@ -4,9 +4,9 @@ import Rx from 'Rx';
 
 import { init as paperHeaderInit } from './paperHeader';
 
-import { GithubService } from './GithubService';
-import { NpmService } from './NpmService';
-
+import { GithubService } from './GithubServiceMock';
+import { NpmService } from './NpmServiceMock';
+import RepositoryDetails from './RepositoryDetails';
 
 // Grab a reference to our auto-binding template
 // and give it some initial binding values
@@ -63,19 +63,20 @@ app.closeDrawer = function() {
 
 
 
-var githubService = window.githubService = new GithubService();
-var npmService = window.npmService = new NpmService();
+window.GithubService = GithubService;
+window.NpmService = NpmService;
+window.RepositoryDetails = RepositoryDetails;
 
 app.repos = [];
 app.loadedPromise.then(() => {
 
-  var userReposPromise = githubService.getUserRepos('thgreasi');
-  var orgsPromise = githubService.getUserOrgs('thgreasi');
+  var userReposPromise = GithubService.getUserRepos('thgreasi');
+  var orgsPromise = GithubService.getUserOrgs('thgreasi');
 
   var overallPromises = [processRepoInfos(userReposPromise)];
 
   overallPromises.push(orgsPromise.then(orgs => {
-    return Promise.all(orgs.map(o => processRepoInfos(githubService.getUserRepos(o.login))));
+    return Promise.all(orgs.map(o => processRepoInfos(GithubService.getUserRepos(o.login))));
   }));
 
   return Promise.all([overallPromises]);
@@ -83,17 +84,17 @@ app.loadedPromise.then(() => {
 
 function processRepoInfos (reposPromise) {
   return reposPromise.then(repos => {
-      app.repos.push.apply(app.repos, repos);
+      repos = repos.map(repo => Object.assign(new RepositoryDetails(), repo));
+      
+      console.log(repos);
+      if (repos.length) {
+        app.repos.push.apply(app.repos, repos);
+        app.set('repos', app.repos.slice());
+      }
 
-      return Promise.all(repos.map(repo => {
-        npmService.getDownloadCountsLastMonth(repo.name).then(dls => {
-          repo.downloads = dls.downloads;
-          app.set('repos', app.repos.slice());
-          // var oldRepos = app.repos.slice();
-          // app.set('repos', []);
-          // setTimeout(() => app.set('repos', oldRepos));
-          return dls;
-        }).catch(() => {});
-      }));
+        // let args = repos.slice();
+        // args.unshift('app.repos');
+        // console.log(args);
+        // app.push.apply(app, args);
     });
 }

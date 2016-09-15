@@ -1,0 +1,193 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+<dom-module id="repo-list-item">
+  <template>
+    <style>
+      :host {
+        display: block;
+        line-height: 3.4em;
+      }
+
+      span {
+        @apply(--paper-font-body1);
+      }
+
+      .repo-icon {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 0.5;
+      }
+
+      .repo-name {
+        font-size: 1.5em;
+        vertical-align: middle;
+      }
+
+      .downloads-cont,
+      .stargazers-cont {
+        text-align: right;
+      }
+
+      .floatleft {
+        float: left;
+      }
+
+      .floatright {
+        float: right;
+      }
+
+      .clearfix:before,
+      .clearfix:after {
+        display: table;
+        content: " ";
+        clear: both;
+      }
+
+      .positive-diff {
+        color: #61de61;
+        font-weight: bold;
+      }
+
+      .negative-diff {
+        color: red;
+        font-weight: bold;
+      }
+
+    </style>
+
+    <div class="clearfix">
+      <svg class="octicon octicon-repo repo-icon" height="24" width="18" role="img" version="1.1" viewBox="0 0 12 16">
+        <path d="M4 9H3V8h1v1zm0-3H3v1h1V6zm0-2H3v1h1V4zm0-2H3v1h1V2zm8-1v12c0 .55-.45 1-1 1H6v2l-1.5-1.5L3 16v-2H1c-.55 0-1-.45-1-1V1c0-.55.45-1 1-1h10c.55 0 1 .45 1 1zm-1 10H1v2h2v-1h3v1h5v-2zm0-10H2v9h9V1z"></path>
+      </svg>
+
+      <span class="repo-name">{{item.name}}</span>
+      <span class="floatright">
+        <div class="stargazers-cont">
+          <span class="diff">
+            <template is="dom-if" if="{{ isPositive(stargazersCountDiff) }}">
+              <span class="positive-diff">
+              +{{stargazersCountDiff}}
+              </span>
+            </template>
+            <template is="dom-if" if="{{ isNegative(stargazersCountDiff) }}">
+              <span class="negative-diff">
+              {{stargazersCountDiff}}
+              </span>
+            </template>
+          </span>
+          <span>{{item.stargazers_count}}</span>
+          <iron-icon icon="star"></iron-icon>
+        </span>
+        <div class="downloads-cont">
+          <template is="dom-if" if="{{item.downloads}}">
+            <span class="diff">
+              <template is="dom-if" if="{{ isPositive(downloadsDiff) }}">
+                <span class="positive-diff">
+                +{{downloadsDiff}}
+                </span>
+              </template>
+              <template is="dom-if" if="{{ isNegative(downloadsDiff) }}">
+                <span class="negative-diff">
+                {{downloadsDiff}}
+                </span>
+              </template>
+              {{downloadsDiff}}
+            </span>
+            <span>{{item.downloads}}</span>
+            <iron-icon icon="file-download"></iron-icon>
+          </template>
+        </span>
+      </span>
+    </div>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'repo-list-item',
+
+        properties: {
+          item: {
+            type: Object,
+            notify: true,
+            observer: '_itemChangedObserver',
+            value: function() { return {}; }
+          },
+          stargazersCountDiff: {
+            type: Number,
+            computed: 'getStargazersCountDiff(item)'
+          },
+          downloadsDiff: {
+            type: Number,
+            readOnly: true
+          }
+        },
+
+        _itemChangedObserver: function (newValue) {
+          this.set('item.stargazers_count_diff', this.stargazers_count_diff || 0);
+
+          console.log(newValue);
+          if (newValue &&
+              !newValue.downloadsPromise &&
+              typeof newValue.getDownloads === 'function' &&
+              !('downloadsPromise' in newValue)) {
+            newValue.getDownloads().then((dls) => {
+              console.log(`${this.item.name} dls:`,
+                this.item.downloads == dls.downloads ?
+                  `${this.item.downloads}` :
+                  `${this.item.downloads} -> ${dls.downloads}`,
+                ` historyLen: ${this.item.downloadsHistory && this.item.downloadsHistory.length}`);
+
+              if (this.item.downloadsHistory &&
+                  this.item.downloadsHistory.length >= 2) {
+                let len = this.item.downloadsHistory.length;
+                let diff = this.item.downloadsHistory[len - 1] - this.item.downloadsHistory[len - 2];
+                this._setDownloadsDiff(diff);
+              }
+              this.notifyPath('item.downloads', dls.downloads);
+            });
+          }
+        },
+
+        getStargazersCountDiff: function(item) {
+          if (item &&
+              item.stargazersHistory &&
+              item.stargazersHistory.length >= 2) {
+            return item.stargazersHistory[item.stargazersHistory.length - 1] - item.stargazersHistory[item.stargazersHistory.length - 2];
+          }
+          return 0;
+        },
+
+        getDownloadsDiff: function(item) {
+          if (item &&
+              item.downloadsHistory &&
+              item.downloadsHistory.length >= 2) {
+            return item.downloadsHistory[item.downloadsHistory.length - 1] - item.downloadsHistory[item.downloadsHistory.length - 2];
+          }
+          return 0;
+        },
+
+        isPositive: function (number) {
+          return number > 0;
+        },
+
+        isNegative: function (number) {
+          return number < 0;
+        }
+      });
+    })();
+  </script>
+</dom-module>
