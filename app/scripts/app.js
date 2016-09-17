@@ -2,47 +2,23 @@ import $ from 'jquery';
 import localforage from 'localforage';
 import Rx from 'Rx';
 
-import { init as paperHeaderInit } from './paperHeader';
+import { app, loadedPromise } from './appCore';
+import { init as appThemeInit } from './appTheme';
 
 import { GithubService } from './GithubServiceMock';
 import { NpmService } from './NpmServiceMock';
 import RepositoryDetails from './RepositoryDetails';
 
-// Grab a reference to our auto-binding template
-// and give it some initial binding values
-// Learn more about auto-binding templates at http://goo.gl/Dx1u2g
-var app = document.querySelector('#app');
-
-// Sets app default base URL
-app.baseUrl = '/';
-if (window.location.port === '') {  // if production
-  // Uncomment app.baseURL below and
-  // set app.baseURL to '/your-pathname/' if running from folder in production
-  // app.baseUrl = '/polymer-starter-kit/';
-}
-
-app.readyPromise = new Promise(function(resolve) {
-  // See https://github.com/Polymer/polymer/issues/1381
-  window.addEventListener('WebComponentsReady', function() {
-    // imports are loaded and elements have been registered
-    resolve();
-  });
-});
-
-app.loadedPromise = new Promise(function(resolve) {
-  // Listen for template bound event to know when bindings
-  // have resolved and content has been stamped to the page
-  app.addEventListener('dom-change', function() {
-    resolve();
-  });
-});
-
-app.loadedPromise.then(() => {
-  console.log('Our app is ready to rock!');
-});
+// usefull while developing
+window.GithubService = GithubService;
+window.NpmService = NpmService;
+window.RepositoryDetails = RepositoryDetails;
 
 
-paperHeaderInit();
+appThemeInit();
+
+
+app.repos = [];
 
 
 app.displayInstalledToast = function() {
@@ -61,14 +37,27 @@ app.closeDrawer = function() {
   app.$.paperDrawerPanel.closeDrawer();
 };
 
+app.reloadRepositories = function() {
+  console.log(`reloadRepositories!`);
+  app.repos.map((repo) => {
+    return repo.updateDetails().then(() => {
+      let i = app.repos.indexOf(repo);
+      if (i >= 0) {
+        var path = `repos.#${i}.stargazers_count`;
+        console.log(`Updated ${repo.name} ${path} Stars: ${app.get(path)}`);
+
+        app.notifyPath(path, app.get(path));
+      }
+    }, (e) => { console.error('Error:', e); });
+  });
+};
 
 
-window.GithubService = GithubService;
-window.NpmService = NpmService;
-window.RepositoryDetails = RepositoryDetails;
+loadedPromise.then(() => {
+  console.log('Our app is ready to rock!');
+});
 
-app.repos = [];
-app.loadedPromise.then(() => {
+loadedPromise.then(() => {
 
   var userReposPromise = GithubService.getUserRepos('thgreasi');
   var orgsPromise = GithubService.getUserOrgs('thgreasi');

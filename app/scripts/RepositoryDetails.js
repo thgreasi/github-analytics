@@ -1,4 +1,4 @@
-import { GithubService } from './GithubService';
+import { GithubService } from './GithubServiceMock';
 import { NpmService } from './NpmServiceMock';
 
 export default class RepositoryDetails {
@@ -24,22 +24,21 @@ export default class RepositoryDetails {
     }
 
     getDownloads () {
-      this.downloads_lastRequestDate = new Date();
-      this.downloadsPromise = NpmService.getDownloadCountsLastMonth(this.name).then(dls => {
-        if (this.downloads !== dls.downloads) {
-            // this.downloads_diff = dls.downloads - (this.downloads || 0);
+        this.downloads_lastRequestDate = new Date();
+        return NpmService.getDownloadCountsLastMonth(this.name).then(dls => {
+            if (this.downloads !== dls.downloads) {
+                // this.downloads_diff = dls.downloads - (this.downloads || 0);
 
-            this.downloads = dls.downloads;
-            this.downloads_lastUpdateDate = new Date();
+                this.downloads = dls.downloads;
+                this.downloads_lastUpdateDate = new Date();
 
-            this.downloadsHistory = this.downloadsHistory || [];
-            this.downloadsHistory.push({
-                date: this.downloads_lastUpdateDate,
-                value: dls.downloads
-            });
-        }
-        return dls;
-      });
-      return this.downloadsPromise;
-  }
+                this.downloadsHistory = this.downloadsHistory || [];
+                this.downloadsHistory.push({
+                    date: this.downloads_lastUpdateDate,
+                    value: dls.downloads
+                });
+            }
+            return dls;
+        });
+    }
 }

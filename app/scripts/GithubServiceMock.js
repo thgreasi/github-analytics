@@ -16,7 +16,13 @@ export class GithubService {
     static getRepoDetails (username, reponame) {
         return this.getUserRepos(username)
         	.then(repos => {
-        		return repos.filter(r => r.name === reponame).shift();
+        		var result = repos.filter(r => r.name === reponame).shift();
+                if (result) {
+                    var sign = Math.random() >= 0.5 ? 1 : -1;
+                    result.stargazers_count = Math.max(0,
+                        result.stargazers_count + Math.ceil(sign * Math.random() * 0.3 * result.stargazers_count));
+                }
+                return result;
         	});
     }
 }
