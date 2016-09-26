@@ -9,14 +9,13 @@ import { GithubService } from './GithubServiceMock';
 import { NpmService } from './NpmServiceMock';
 import RepositoryDetails from './RepositoryDetails';
 
-// usefull while developing
-window.GithubService = GithubService;
-window.NpmService = NpmService;
-window.RepositoryDetails = RepositoryDetails;
-
 
 appThemeInit();
 
+
+app.GithubService = GithubService;
+app.NpmService = NpmService;
+app.RepositoryDetails = RepositoryDetails;
 
 app.repos = [];
 

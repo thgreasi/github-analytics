@@ -1,0 +1,116 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+<dom-module id="user-search">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+
+      span,
+      input {
+        @apply(--paper-font-body2);
+      }
+
+      ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+      }
+    </style>
+
+    <label for="user-input">Search by user or organization:</label>
+    <div>
+      <input id="user-input" value="{{user::input}}">
+    </div>
+    <ul>
+      <template is="dom-repeat" items="{{userInfos}}">
+        <li>
+          <iron-icon icon="app-svg-icons:github-icon"></iron-icon>
+          <repo-list-item item={{item}}></repo-list-item>
+        </li>
+      </template>
+    </ul>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'user-search',
+
+        properties: {
+          user: {
+            type: String,
+            // value: 'Welcome!',
+            notify: true,
+            observer: '_userChanged'
+          },
+
+          searchProvider: {
+            type: Object,
+            default: f => {
+              return {
+                getUserInfo () {
+                  return null;
+                }
+              };
+            },
+            notify: true
+          },
+
+          isSearching: {
+            type: Boolean,
+            notify: true
+          },
+
+          userInfos: {
+            type: Array,
+            default: f => {
+              return [];
+            },
+            notify: true,
+            readOnly: true
+          }
+        },
+
+        _userChanged: function () {
+          if (this.user === null) {
+            this.user = '';
+          }
+
+          if (this.searchProvider && this.searchProvider.getUserInfo) {
+            var promise = this.searchProvider.getUserInfo(this.user);
+            // TODO add a spinner
+            promise.then(u => {
+              console.log(u);
+              if (u) {
+                this._setUserInfos([u]);
+              } else {
+                this._setUserInfos([]);
+              }
+            }, () => {
+              this._setUserInfos([]);
+            });
+          }
+        },
+        
+        ready: function() {
+          
+        }
+      });
+    })();
+  </script>
+</dom-module>
