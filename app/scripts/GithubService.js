@@ -4,6 +4,7 @@ import Rx from 'Rx';
 const BASE_URL = 'https://api.github.com/';
 
 export class GithubService {
+
     static getUserInfo (username) {
         var promise = $.get(BASE_URL + `users/${username}`);
         // return promise;
@@ -59,6 +60,32 @@ export class GithubService {
 
     static getRepoDetails (username, reponame) {
         var promise = $.get(BASE_URL + `repos/${username}/${reponame}`);
+        // the only extras are: network_count & subscribers_count
+        return Promise.resolve(promise).then(function (repo) {
+            console.log(repo);
+            return repo;
+        }).then(null, function (err) {
+            console.log(err);
+            return err;
+        });
+    }
+
+    static searchUser (username) {
+        // https://api.github.com/search/users?q=thgre
+        var promise = $.get(BASE_URL + `search/users?q=${username}`);
+        // the only extras are: network_count & subscribers_count
+        return Promise.resolve(promise).then(function (repo) {
+            console.log(repo);
+            return repo;
+        }).then(null, function (err) {
+            console.log(err);
+            return err;
+        });
+    }
+
+    static searchRepo (reponame) {
+        // https://api.github.com/search/repositories?q=localfora
+        var promise = $.get(BASE_URL + `search/repositories?q=${reponame}`);
         // the only extras are: network_count & subscribers_count
         return Promise.resolve(promise).then(function (repo) {
             console.log(repo);

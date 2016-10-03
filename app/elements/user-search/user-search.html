@@ -28,20 +28,124 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         padding-left: 0;
         margin: 0;
       }
+
+      header {
+        color: #6F6F6F;
+        margin-bottom: 0;
+      }
+
+      paper-spinner {
+        vertical-align: middle;
+      }
+
+      paper-material {
+        @apply(--paper-font-body2);
+      }
+
+      paper-material .subhead {
+        @apply(--paper-font-subhead);
+      }
+
+      paper-material {
+        border-radius: 2px;
+        height: 100%;
+        padding: 16px 0 16px 0;
+        width: calc(98.66% - 16px);
+        margin: 16px auto;
+        background: white;
+      }
+
+      header + paper-material {
+        margin-top: 0;
+      }
+
+      /* Breakpoints */
+
+      /* Small */
+      @media (max-width: 600px) {
+
+        paper-material {
+          --menu-container-display: none;
+          width: calc(97.33% - 32px);
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+
+      }
+
+      /* Tablet+ */
+      @media (min-width: 601px) {
+
+        paper-material {
+          width: calc(98% - 46px);
+          margin-bottom: 32px;
+          padding-left: 30px;
+          padding-right: 30px;
+        }
+
+      }
+
     </style>
 
-    <label for="user-input">Search by user or organization:</label>
-    <div>
-      <input id="user-input" value="{{user::input}}">
-    </div>
-    <ul>
-      <template is="dom-repeat" items="{{userInfos}}">
-        <li>
-          <iron-icon icon="app-svg-icons:github-icon"></iron-icon>
-          <repo-list-item item={{item}}></repo-list-item>
-        </li>
+    <paper-material elevation="1">
+      <label for="user-input">Search by user or organization:</label>
+      <div>
+        <input id="user-input" value="{{searchTerm::input}}" placeholder="3 characters min">
+      </div>
+    </paper-material>
+    
+    <section>
+      <template is="dom-if" if="{{activeUserPromise}}">
+        <header>
+          Users
+          <paper-spinner active></paper-spinner>
+        </header>
       </template>
-    </ul>
+
+      <template is="dom-if" if="{{userInfos.length}}">
+        <header>Users</header>
+        <paper-material elevation="1">
+          <ul>
+            <template is="dom-repeat" items="{{userInfos}}">
+              <li>
+                <iron-icon icon="app-svg-icons:github-icon"></iron-icon>
+                <span class="user-name">{{item.login}}</span>
+              </li>
+            </template>
+          </ul>
+        </paper-material>
+      </template>
+    </section>
+
+    <section>
+      <template is="dom-if" if="{{activeRepoPromise}}">
+        <header>
+          Repos
+          <paper-spinner active></paper-spinner>
+        </header>
+      </template>
+
+      <template is="dom-if" if="{{repoInfos.length}}">
+        <header>Repos</header>
+        <paper-material elevation="1">
+          <ul>
+            <template is="dom-repeat" items="{{repoInfos}}">
+              <li>
+                <template is="dom-if" if="{{!item.fork}}">
+                  <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
+                </template>
+
+                <template is="dom-if" if="{{item.fork}}">
+                  <iron-icon icon="app-svg-icons:repo-forked-icon"></iron-icon>
+                </template>
+
+                <span class="repo-name">{{item.full_name}}</span>
+              </li>
+            </template>
+          </ul>
+        </paper-material>
+      </template>
+    </section>
   </template>
 
   <script>
@@ -52,18 +156,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         is: 'user-search',
 
         properties: {
-          user: {
+          searchTerm: {
             type: String,
             // value: 'Welcome!',
             notify: true,
-            observer: '_userChanged'
+            observer: '_searchTermChanged'
           },
 
           searchProvider: {
             type: Object,
             default: f => {
               return {
-                getUserInfo () {
+                searchUser () {
                   return null;
                 }
               };
@@ -71,10 +175,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             notify: true
           },
 
-          isSearching: {
-            type: Boolean,
-            notify: true
-          },
+          // isSearching: {
+          //   type: Boolean,
+          //   notify: true
+          // },
 
           userInfos: {
             type: Array,
@@ -83,26 +187,83 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             },
             notify: true,
             readOnly: true
-          }
+          },
+
+          repoInfos: {
+            type: Array,
+            default: f => {
+              return [];
+            },
+            notify: true,
+            readOnly: true
+          },
+
+          activeUserPromise: {
+            type: Object,
+            default: f => {
+              return null;
+            },
+            notify: true,
+            readOnly: true
+          },
+
+          activeRepoPromise: {
+            type: Object,
+            default: f => {
+              return null;
+            },
+            notify: true,
+            readOnly: true
+          },
         },
 
-        _userChanged: function () {
-          if (this.user === null) {
-            this.user = '';
+        // debouncedClickAction: function(e) {
+        //   // will not call `processClick` more than once per 100ms
+        //   this.debounce('click', function() {
+        //    this.processClick();
+        //   }, 100);
+        // },
+
+        _searchTermChanged: function () {
+          if (!this.searchTerm || this.searchTerm.length < 3) {
+            this._setUserInfos([]);
+            this._setActiveUserPromise(null);
+
+            this._setRepoInfos([]);
+            this._setActiveRepoPromise(null);
           }
 
-          if (this.searchProvider && this.searchProvider.getUserInfo) {
-            var promise = this.searchProvider.getUserInfo(this.user);
-            // TODO add a spinner
+          if (this.searchProvider && this.searchProvider.searchUser) {
+            let promise = this.searchProvider.searchUser(this.searchTerm);
+            this._setActiveUserPromise(promise);
             promise.then(u => {
-              console.log(u);
-              if (u) {
-                this._setUserInfos([u]);
-              } else {
-                this._setUserInfos([]);
+              if (this.activeUserPromise === promise) {
+                if (u && u.items) {
+                  this._setUserInfos(u.items);
+                } else {
+                  this._setUserInfos([]);
+                }
+                this._setActiveUserPromise(null);
               }
             }, () => {
               this._setUserInfos([]);
+            });
+          }
+
+          if (this.searchProvider && this.searchProvider.searchRepo) {
+            let promise = this.searchProvider.searchRepo(this.searchTerm);
+            this._setActiveRepoPromise(promise);
+            promise.then(u => {
+              if (this.activeRepoPromise === promise) {
+                if (u && u.items) {
+                  this._setRepoInfos(u.items);
+                } else {
+                  this._setRepoInfos([]);
+                }
+                this._setActiveRepoPromise(null);
+              }
+            }, () => {
+              this._setRepoInfos([]);
             });
           }
         },
