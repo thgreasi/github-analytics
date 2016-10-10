@@ -73,14 +73,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <span class="floatright">
         <div class="stargazers-cont">
           <span class="diff">
-            <template is="dom-if" if="{{ isPositive(stargazersCountDiff) }}">
+            <template is="dom-if" if="{{ isPositive(stargazersDiff) }}">
               <span class="positive-diff">
-              +{{stargazersCountDiff}}
+              +{{stargazersDiff}}
               </span>
             </template>
-            <template is="dom-if" if="{{ isNegative(stargazersCountDiff) }}">
+            <template is="dom-if" if="{{ isNegative(stargazersDiff) }}">
               <span class="negative-diff">
-              {{stargazersCountDiff}}
+              {{stargazersDiff}}
               </span>
             </template>
           </span>
@@ -124,9 +124,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             observer: '_itemChangedObserver',
             value: function() { return {}; }
           },
-          stargazersCountDiff: {
+          stargazersDiff: {
             type: Number,
-            computed: 'getStargazersCountDiff(item)'
+            readOnly: true
           },
           downloadsDiff: {
             type: Number,
@@ -134,10 +134,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
 
+        observers: [
+            '_stargazersChanged(item.stargazers_count)',
+            '_downloadsChanged(item.downloads)'
+        ],
+
+        _stargazersChanged: function (newValue) {
+          let diff = this.getLastRecordsDiff(this.item && this.item.stargazersHistory);
+          this._setStargazersDiff(diff);
+        },
+
+        _downloadsChanged: function (newValue) {
+          let diff = this.getLastRecordsDiff(this.item && this.item.downloadsHistory);
+          this._setDownloadsDiff(diff);
+        },
+
+
         _itemChangedObserver: function (newValue) {
           this.set('item.stargazers_count_diff', this.stargazers_count_diff || 0);
 
-          console.log(newValue);
           if (newValue &&
               !newValue.downloadsPromise &&
               typeof newValue.getDownloads === 'function' &&
@@ -149,31 +164,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   `${this.item.downloads} -> ${dls.downloads}`,
                 ` historyLen: ${this.item.downloadsHistory && this.item.downloadsHistory.length}`);
 
-              if (this.item.downloadsHistory &&
-                  this.item.downloadsHistory.length >= 2) {
-                let len = this.item.downloadsHistory.length;
-                let diff = this.item.downloadsHistory[len - 1] - this.item.downloadsHistory[len - 2];
-                this._setDownloadsDiff(diff);
-              }
               this.notifyPath('item.downloads', dls.downloads);
             });
           }
         },
 
-        getStargazersCountDiff: function(item) {
-          if (item &&
-              item.stargazersHistory &&
-              item.stargazersHistory.length >= 2) {
-            return item.stargazersHistory[item.stargazersHistory.length - 1] - item.stargazersHistory[item.stargazersHistory.length - 2];
-          }
-          return 0;
-        },
-
-        getDownloadsDiff: function(item) {
-          if (item &&
-              item.downloadsHistory &&
-              item.downloadsHistory.length >= 2) {
-            return item.downloadsHistory[item.downloadsHistory.length - 1] - item.downloadsHistory[item.downloadsHistory.length - 2];
+        getLastRecordsDiff: function(array) {
+          if (array &&
+              array.length >= 2) {
+            let len = array.length;
+            return array[len - 1].value - array[len - 2].value;
           }
           return 0;
         },
