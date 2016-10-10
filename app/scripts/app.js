@@ -51,11 +51,6 @@ app.reloadRepositories = function() {
   });
 };
 
-
-loadedPromise.then(() => {
-  console.log('Our app is ready to rock!');
-});
-
 loadedPromise.then(() => {
 
   var userReposPromise = GithubService.getUserRepos('thgreasi');
@@ -73,6 +68,10 @@ loadedPromise.then(() => {
 function processRepoInfos (reposPromise) {
   return reposPromise.then(repos => {
       repos = repos.map(repo => Object.assign(new RepositoryDetails(), repo));
+      repos.forEach((repo) => {
+        repo.setStargazers(repo.stargazers_count);
+        repo.setDownloads(repo.downloads);
+      });
       
       console.log(repos);
       if (repos.length) {
