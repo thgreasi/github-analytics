@@ -69,39 +69,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <div class="clearfix">
       <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
 
-      <span class="repo-name">{{item.name}}</span>
+      <span class="repo-name">{{ item.name }}</span>
       <span class="floatright">
         <div class="stargazers-cont">
+
           <span class="diff">
-            <template is="dom-if" if="{{ isPositive(stargazersDiff) }}">
-              <span class="positive-diff">
-              +{{stargazersDiff}}
-              </span>
-            </template>
-            <template is="dom-if" if="{{ isNegative(stargazersDiff) }}">
-              <span class="negative-diff">
-              {{stargazersDiff}}
+            <template is="dom-if" if="{{ stargazersDiff }}">
+              <span class$="{{ getDiffClass(stargazersDiff) }}">
+                <template is="dom-if" if="{{ isPositive(stargazersDiff) }}">+</template>
+                {{ stargazersDiff }}
               </span>
             </template>
           </span>
-          <span>{{item.stargazers_count}}</span>
+
+          <span>{{ item.stargazers_count }}</span>
           <iron-icon icon="star"></iron-icon>
         </span>
         <div class="downloads-cont">
-          <template is="dom-if" if="{{item.downloads}}">
+          <template is="dom-if" if="{{ item.downloads }}">
+
             <span class="diff">
-              <template is="dom-if" if="{{ isPositive(downloadsDiff) }}">
-                <span class="positive-diff">
-                +{{downloadsDiff}}
-                </span>
-              </template>
-              <template is="dom-if" if="{{ isNegative(downloadsDiff) }}">
-                <span class="negative-diff">
-                {{downloadsDiff}}
+              <template is="dom-if" if="{{ downloadsDiff }}">
+                <span class$="{{ getDiffClass(downloadsDiff) }}">
+                  <template is="dom-if" if="{{ isPositive(downloadsDiff) }}">+</template>
+                  {{ normalizeNumberLength(downloadsDiff) }}
                 </span>
               </template>
             </span>
-            <span>{{item.downloads}}</span>
+
+            <span>{{ normalizeNumberLength(item.downloads) }}</span>
             <iron-icon icon="file-download"></iron-icon>
           </template>
         </span>
@@ -150,12 +146,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 
         _itemChangedObserver: function (newValue) {
-          this.set('item.stargazers_count_diff', this.stargazers_count_diff || 0);
-
           if (newValue &&
-              !newValue.downloadsPromise &&
-              typeof newValue.updateDownloads === 'function' &&
-              !('downloadsPromise' in newValue)) {
+              typeof newValue.updateDownloads === 'function') {
             newValue.updateDownloads().then((dls) => {
               console.log(`${this.item.name} dls:`,
                 this.item.downloads == dls.downloads ?
@@ -168,7 +160,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }
         },
 
-        getLastRecordsDiff: function(array) {
+        getLastRecordsDiff: function (array) {
           if (array &&
               array.length >= 2) {
             let len = array.length;
@@ -183,6 +175,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         isNegative: function (number) {
           return number < 0;
+        },
+
+        getDiffClass: function (diff) {
+          if (diff > 0) {
+            return 'positive-diff';
+          }
+          if (diff < 0) {
+            return 'negative-diff';
+          }
+        },
+
+        normalizeNumberLength: function (num) {
+          var x = [
+            '',
+            'K',
+            'M'
+          ];
+          return num;
         }
       });
     })();
