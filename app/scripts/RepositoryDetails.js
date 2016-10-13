@@ -30,7 +30,6 @@ export default class RepositoryDetails {
 
     updateDetails () {
         return GithubService.getRepoDetails(this.owner.login, this.name).then(repo => {
-            // this.repoDetails_lastUpdateDate = new Date();
             this.setStargazers(repo.stargazers_count);
             Object.assign(this, repo);
             return repo;
@@ -57,7 +56,7 @@ export default class RepositoryDetails {
         }
     }
 
-    getDownloads () {
+    updateDownloads () {
         this.downloads_lastRequestDate = new Date();
         return NpmService.getDownloadCountsLastMonth(this.name).then(dls => {
             this.setDownloads(dls.downloads);

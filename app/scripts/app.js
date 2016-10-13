@@ -39,15 +39,26 @@ app.closeDrawer = function() {
 app.reloadRepositories = function() {
   console.log(`reloadRepositories!`);
   app.repos.map((repo) => {
-    return repo.updateDetails().then(() => {
-      let i = app.repos.indexOf(repo);
-      if (i >= 0) {
-        var path = `repos.#${i}.stargazers_count`;
-        console.log(`Updated ${repo.name} ${path} Stars: ${app.get(path)}`);
+    return Promise.all([
+      repo.updateDetails().then(() => {
+        let i = app.repos.indexOf(repo);
+        if (i >= 0) {
+          var path = `repos.#${i}.stargazers_count`;
+          console.log(`Updated ${repo.name} ${path} Stars: ${app.get(path)}`);
 
-        app.notifyPath(path, app.get(path));
-      }
-    }, (e) => { console.error('Error:', e); });
+          app.notifyPath(path, app.get(path));
+        }
+      }, (e) => { console.error('Error:', e); }),
+      repo.updateDownloads().then(() => {
+        let i = app.repos.indexOf(repo);
+        if (i >= 0) {
+          var path = `repos.#${i}.downloads`;
+          console.log(`Updated ${repo.name} ${path} dls: ${app.get(path)}`);
+
+          app.notifyPath(path, app.get(path));
+        }
+      }, (e) => { console.error('Error:', e); })
+    ]);
   });
 };
 

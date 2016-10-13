@@ -6,7 +6,7 @@ export class NpmService {
         // https://api.npmjs.org/downloads/point/last-month/jquery
         return Promise.resolve({
             "downloads": packageName.length % 7 ?
-                            2072243 * Math.random() | 0 :
+                            (2072243 * Math.random()) | 0 :
                             undefined,
             "start": "2016-06-16",
             "end": "2016-07-15",

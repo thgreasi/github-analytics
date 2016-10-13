@@ -100,7 +100,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 {{downloadsDiff}}
                 </span>
               </template>
-              {{downloadsDiff}}
             </span>
             <span>{{item.downloads}}</span>
             <iron-icon icon="file-download"></iron-icon>
@@ -155,9 +154,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           if (newValue &&
               !newValue.downloadsPromise &&
-              typeof newValue.getDownloads === 'function' &&
+              typeof newValue.updateDownloads === 'function' &&
               !('downloadsPromise' in newValue)) {
-            newValue.getDownloads().then((dls) => {
+            newValue.updateDownloads().then((dls) => {
               console.log(`${this.item.name} dls:`,
                 this.item.downloads == dls.downloads ?
                   `${this.item.downloads}` :
