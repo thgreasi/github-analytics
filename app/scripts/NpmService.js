@@ -23,4 +23,16 @@ export class NpmService {
     //         console.log(err);
     //     });
     // }
+
+    static searchNpm (packageName) {
+        return fetch(`http://npmsearch.com/query?q=${packageName}&fields=name`).then(function (response) {
+            return response.json();
+        }).then(function(data) {
+            console.log(data);
+            return data;
+        }).then(null, function (err) {
+            console.log(err);
+            return err;
+        });
+    }
 }
