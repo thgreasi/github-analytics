@@ -1,4 +1,11 @@
-import { mockUserData, mockUserOrgsData, mockRepoData, mockUserSearchData, mockRepoSearchData } from './GithubServiceMockData';
+import $ from 'jquery';
+import Rx from 'Rx';
+
+import { mockUserData } from './MockData/GithubServiceMockUserData';
+import { mockUserOrgsData } from './MockData/GithubServiceMockUserOrgsData';
+import { mockRepoData } from './MockData/GithubServiceMockRepoData';
+import { mockUserSearchData } from './MockData/GithubServiceMockUserSearchData';
+import { mockRepoSearchData } from './MockData/GithubServiceMockRepoSearchData';
 
 export class GithubService {
     static getUserInfo (username) {
