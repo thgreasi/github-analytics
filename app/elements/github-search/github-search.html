@@ -11,7 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
 
-<dom-module id="user-search">
+<dom-module id="github-search">
   <template>
     <style include="shared-styles">
       :host {
@@ -86,13 +86,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
     </style>
-
-    <paper-material elevation="1">
-      <label for="user-input">Search by user or organization:</label>
-      <div>
-        <input id="user-input" value="{{searchTerm::input}}" placeholder="3 characters min">
-      </div>
-    </paper-material>
     
     <section>
       <template is="dom-if" if="{{activeUserPromise}}">
@@ -153,7 +146,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       'use strict';
 
       Polymer({
-        is: 'user-search',
+        is: 'github-search',
 
         properties: {
           searchTerm: {
