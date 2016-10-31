@@ -8,10 +8,7 @@ export class GithubService {
     static getUserInfo (username) {
         var promise = $.get(BASE_URL + `users/${username}`);
         // return promise;
-        return Promise.resolve(promise).then(function(data) {
-            console.log(data);
-            return data;
-        }).then(null, function (err) {
+        return Promise.resolve(promise).catch(function (err) {
             console.log(err);
             return err;
         });
@@ -20,10 +17,7 @@ export class GithubService {
     static getUserOrgs (username) {
         var promise = $.get(BASE_URL + `users/${username}/orgs`);
         // return promise;
-        return Promise.resolve(promise).then(function(data) {
-            console.log(data);
-            return data;
-        }).then(null, function (err) {
+        return Promise.resolve(promise).catch(function (err) {
             console.log(err);
             return err;
         });
@@ -49,10 +43,7 @@ export class GithubService {
             }).filter(function (repo) {
                 return !repo.fork;
             });
-        }).then(function(data) {
-            console.log(data);
-            return data;
-        }).then(null, function (err) {
+        }).catch(function (err) {
             console.log(err);
             return err;
         });
@@ -61,10 +52,7 @@ export class GithubService {
     static getRepoDetails (username, reponame) {
         var promise = $.get(BASE_URL + `repos/${username}/${reponame}`);
         // the only extras are: network_count & subscribers_count
-        return Promise.resolve(promise).then(function (repo) {
-            console.log(repo);
-            return repo;
-        }).then(null, function (err) {
+        return Promise.resolve(promise).catch(function (err) {
             console.log(err);
             return err;
         });
@@ -74,10 +62,7 @@ export class GithubService {
         // https://api.github.com/search/users?q=thgre
         var promise = $.get(BASE_URL + `search/users?q=${username}`);
         // the only extras are: network_count & subscribers_count
-        return Promise.resolve(promise).then(function (repo) {
-            console.log(repo);
-            return repo;
-        }).then(null, function (err) {
+        return Promise.resolve(promise).catch(function (err) {
             console.log(err);
             return err;
         });
@@ -87,10 +72,7 @@ export class GithubService {
         // https://api.github.com/search/repositories?q=localfora
         var promise = $.get(BASE_URL + `search/repositories?q=${reponame}`);
         // the only extras are: network_count & subscribers_count
-        return Promise.resolve(promise).then(function (repo) {
-            console.log(repo);
-            return repo;
-        }).then(null, function (err) {
+        return Promise.resolve(promise).catch(function (err) {
             console.log(err);
             return err;
         });

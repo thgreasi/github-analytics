@@ -154,11 +154,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if (newValue &&
               typeof newValue.updateDownloads === 'function') {
             newValue.updateDownloads().then((dls) => {
-              console.log(`${this.item.name} dls:`,
-                this.item.downloads == dls.downloads ?
-                  `${this.item.downloads}` :
-                  `${this.item.downloads} -> ${dls.downloads}`,
-                ` historyLen: ${this.item.downloadsHistory && this.item.downloadsHistory.length}`);
+              // console.log(`${this.item.name} dls:`,
+              //   this.item.downloads == dls.downloads ?
+              //     `${this.item.downloads}` :
+              //     `${this.item.downloads} -> ${dls.downloads}`,
+              //   ` historyLen: ${this.item.downloadsHistory && this.item.downloadsHistory.length}`);
 
               this.notifyPath('item.downloads', dls.downloads);
             });
