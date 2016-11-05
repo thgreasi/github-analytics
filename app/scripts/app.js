@@ -37,9 +37,8 @@ app.closeDrawer = function() {
 };
 
 app.reloadPage = function() {
-  var crntPageElement = document.querySelector('section[data-route="' + app.route + '"] [page-element]');
-  if (crntPageElement && typeof crntPageElement.refresh === 'function') {
-    crntPageElement.refresh();
+  if (app.crntPageElement && typeof app.crntPageElement.refresh === 'function') {
+    app.crntPageElement.refresh();
   }
 };
 
