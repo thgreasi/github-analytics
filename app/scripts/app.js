@@ -57,31 +57,33 @@ loadedPromise.then(() => {
   var userReposPromise = GithubService.getUserRepos('thgreasi');
   var orgsPromise = GithubService.getUserOrgs('thgreasi');
 
-  var overallPromises = [processRepoInfos(userReposPromise)];
+  var overallPromises = [processRepoInfosPromise(userReposPromise)];
 
   overallPromises.push(orgsPromise.then(orgs => {
-    return Promise.all(orgs.map(o => processRepoInfos(GithubService.getUserRepos(o.login))));
+    return Promise.all(orgs.map(o => processRepoInfosPromise(GithubService.getUserRepos(o.login))));
   }));
 
   return Promise.all([overallPromises]);
 });
 
-function processRepoInfos (reposPromise) {
-  return reposPromise.then(repos => {
-      repos = repos.map(repo => Object.assign(new RepositoryDetails(), repo));
-      repos.forEach((repo) => {
-        repo.setStargazers(repo.stargazers_count);
-        repo.setDownloads(repo.downloads);
-      });
-      
-      if (repos.length) {
-        app.repos.push.apply(app.repos, repos);
-        app.set('repos', app.repos.slice());
-      }
 
-        // let args = repos.slice();
-        // args.unshift('app.repos');
-        // console.log(args);
-        // app.push.apply(app, args);
-    });
+function processRepoInfos (repos) {
+  repos.forEach((repo) => {
+    repo.setStargazers(repo.stargazers_count);
+    repo.setDownloads(repo.downloads);
+  });
+  
+  if (repos.length) {
+    app.repos.push.apply(app.repos, repos);
+    app.set('repos', app.repos.slice());
+  }
+
+  // let args = repos.slice();
+  // args.unshift('app.repos');
+  // console.log(args);
+  // app.push.apply(app, args);
+}
+
+function processRepoInfosPromise (reposPromise) {
+  return reposPromise.then(repos => processRepoInfos(repos));
 }

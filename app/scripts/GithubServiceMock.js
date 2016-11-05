@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import Rx from 'Rx';
 
+import RepositoryDetails from './RepositoryDetails';
 import { mockUserData } from './MockData/GithubServiceMockUserData';
 import { mockUserOrgsData } from './MockData/GithubServiceMockUserOrgsData';
 import { mockRepoData } from './MockData/GithubServiceMockRepoData';
@@ -8,6 +9,7 @@ import { mockUserSearchData } from './MockData/GithubServiceMockUserSearchData';
 import { mockRepoSearchData } from './MockData/GithubServiceMockRepoSearchData';
 
 export class GithubService {
+
     static getUserInfo (username) {
         return Promise.resolve(mockUserData[username]);
     }
@@ -17,7 +19,8 @@ export class GithubService {
     }
 
     static getUserRepos (username) {
-        return Promise.resolve(mockRepoData[username] || []);
+        return Promise.resolve((mockRepoData[username] || [])
+            .map(repo => Object.assign(new RepositoryDetails(), repo)));
     }
 
     static getRepoDetails (username, reponame) {
@@ -25,6 +28,7 @@ export class GithubService {
             .then(repos => {
                 var result = repos.filter(r => r.name === reponame).shift();
                 if (result) {
+                    // result = Object.assign(new RepositoryDetails(), result);
                     var sign = Math.random() >= 0.5 ? 1 : -1;
                     result.stargazers_count = Math.max(0,
                         result.stargazers_count + Math.ceil(sign * Math.random() * 0.3 * result.stargazers_count));
@@ -70,7 +74,7 @@ export class GithubService {
                     var result = Object.assign({}, match);
                     result.items = result.items.filter(i => {
                         return i.name.indexOf(reponame) >= 0;
-                    });
+                    }).map(repo => Object.assign(new RepositoryDetails(), repo));
                     setTimeout(() => {
                         resolve(result);
                     }, 1000 + Math.random() * 1);

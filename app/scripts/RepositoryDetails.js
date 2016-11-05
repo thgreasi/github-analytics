@@ -31,7 +31,13 @@ export default class RepositoryDetails {
     updateDetails () {
         return GithubService.getRepoDetails(this.owner.login, this.name).then(repo => {
             this.setStargazers(repo.stargazers_count);
-            Object.assign(this, repo);
+            Object.keys(repo).filter(k =>
+                typeof repo[k] !== 'function' &&
+                k !== 'stargazersHistory' &&
+                k !== 'downloadsHistory'
+            ).forEach(k => {
+                this[k] = repo[k];
+            });
             return repo;
         });
     }
@@ -57,6 +63,10 @@ export default class RepositoryDetails {
     }
 
     updateDownloads () {
+        if (this.fork) {
+            // TODO: actually check the NPM package target
+            return Promise.resolve(0);
+        }
         this.downloads_lastRequestDate = new Date();
         return NpmService.getDownloadCountsLastMonth(this.name).then(dls => {
             this.setDownloads(dls.downloads);

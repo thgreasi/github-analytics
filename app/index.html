@@ -87,6 +87,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <span>Repos</span>
           </a>
 
+          <a data-route="show-repos" href="{{baseUrl}}repos">
+            <iron-icon icon="info"></iron-icon>
+            <span>Repos Details</span>
+          </a>
+
           <!-- <a data-route="users" href="{{baseUrl}}users">
             <iron-icon icon="info"></iron-icon>
             <span>Users</span>
@@ -129,6 +134,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               <h1 class="page-title" tabindex="-1">Repositories</h1>
               <paper-material class="no-padding" elevation="1">
                 <repo-list items="{{ repos }}"></repo-list>
+              </paper-material>
+            </section>
+
+            <section data-route="show-repos" tabindex="-1">
+              <h1 class="page-title" tabindex="-1">Show Repos</h1>
+              <paper-material elevation="-1">
+                <show-repos-page repo-names-param="{{ params.names }}" search-provider="{{ GithubService }}"></show-repos-page>
               </paper-material>
             </section>
 

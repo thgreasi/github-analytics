@@ -1,6 +1,8 @@
 import $ from 'jquery';
 import Rx from 'Rx';
 
+import RepositoryDetails from './RepositoryDetails';
+
 const BASE_URL = 'https://api.github.com/';
 
 export class GithubService {
@@ -42,7 +44,7 @@ export class GithubService {
                 };
             }).filter(function (repo) {
                 return !repo.fork;
-            });
+            }).map(repo => Object.assign(new RepositoryDetails(), repo));
         }).catch(function (err) {
             console.log(err);
             return err;
@@ -50,7 +52,8 @@ export class GithubService {
     }
 
     static getRepoDetails (username, reponame) {
-        var promise = $.get(BASE_URL + `repos/${username}/${reponame}`);
+        var promise = Promise.resolve($.get(BASE_URL + `repos/${username}/${reponame}`))
+            .then(repo => Object.assign(new RepositoryDetails(), repo));
         // the only extras are: network_count & subscribers_count
         return Promise.resolve(promise).catch(function (err) {
             console.log(err);
@@ -68,9 +71,14 @@ export class GithubService {
         });
     }
 
+    // TODO: add TopN parameter
     static searchRepo (reponame) {
         // https://api.github.com/search/repositories?q=localfora
-        var promise = $.get(BASE_URL + `search/repositories?q=${reponame}`);
+        var promise = $.get(BASE_URL + `search/repositories?q=${reponame}`)
+            .then(result => {
+                result.items = result.items.map(repo => Object.assign(new RepositoryDetails(), repo));
+                return result;
+            });
         // the only extras are: network_count & subscribers_count
         return Promise.resolve(promise).catch(function (err) {
             console.log(err);

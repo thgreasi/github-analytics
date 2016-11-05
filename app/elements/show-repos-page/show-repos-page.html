@@ -1,0 +1,117 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+<dom-module id="show-repos-page">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      span {
+        @apply(--paper-font-body1);
+      }
+
+      ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+      }
+
+      li {
+        border: 1px solid rgba(0, 0, 0, 0.14);
+        border-left: 3px solid #61de61;
+        /*margin: 0.5em 0;*/
+        padding-left: 0.7em;
+      }
+
+    </style>
+
+    <ul>
+      <template is="dom-repeat" items="{{repoFullDetails}}">
+        <li>
+          <repo-list-item item={{item}}></repo-list-item>
+        </li>
+      </template>
+    </ul>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'show-repos-page',
+
+        properties: {
+          repoNamesParam: {
+            type: String,
+            notify: true,
+            observer: '_repoNamesParamChanged'
+          },
+
+          searchProvider: {
+            type: Object,
+            default: f => {
+              return {
+                getRepoDetails () {
+                  return null;
+                }
+              };
+            },
+            notify: true
+          },
+
+          repoNames: {
+            type: Array,
+            notify: true
+          },
+
+          repoFullDetails: {
+            type: Array,
+            notify: true
+          }
+        },
+
+        _repoNamesParamChanged: function () {
+          if (!this.repoNamesParam || !this.repoNamesParam.length) {
+            this.repoNames = [];
+          } else {
+            this.repoNames = this.repoNamesParam.split(',')
+              .map(s => s.trim())
+              .filter(s => s && s.length);
+          }
+          this.notifyPath('repoNames', this.repoNames);
+
+          this.repoFullDetails = this.repoNames.map(name => {
+            var result = {
+              name
+            };
+            this.searchProvider.searchRepo(name)
+                .then(repos => repos.items.filter(item => item.name === name)[0])
+                .then(repo => {
+                  let i = this.repoFullDetails.indexOf(result);
+                  if (i >= 0 && repo) {
+                    this.repoFullDetails[i] = repo;
+                    this.set(`repoFullDetails.#${i}`, repo);
+                  }
+                });
+            return result;
+          });
+        },
+
+        ready: function() {
+
+          // this.items = [
+          //   'Responsive Web App boilerplate',
+          //   'Iron Elements and Paper Elements',
+          //   'End-to-end Build Tooling (including Vulcanize)',
+          //   'Unit testing with Web Component Tester',
+          //   'Routing with Page.js',
+          //   'Offline support with the Platinum Service Worker Elements'
+          // ];
+        }
+      });
+    })();
+  </script>
+</dom-module>
