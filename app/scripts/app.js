@@ -36,20 +36,11 @@ app.closeDrawer = function() {
   app.$.paperDrawerPanel.closeDrawer();
 };
 
-app.reloadRepositories = function() {
-  app.repos.map((repo) => {
-    return Promise.all([
-      repo.updateDetails().then(() => 'repos.#${i}.stargazers_count'),
-      repo.updateDownloads().then(() => 'repos.#${i}.downloads')
-    ].map((p) => p.then((path) => {
-      let i = app.repos.indexOf(repo);
-      if (i >= 0) {
-        path = path.replace('${i}', i);
-        app.notifyPath(path, app.get(path));
-        // console.log(`Updated ${repo.name} ${path} Stars: ${app.get(path)}, dls: ${app.get(path)}`);
-      }
-    }))).catch((e) => { console.error('Error:', e); });
-  });
+app.reloadPage = function() {
+  var crntPageElement = document.querySelector('section[data-route="' + app.route + '"] [page-element]');
+  if (crntPageElement && typeof crntPageElement.refresh === 'function') {
+    crntPageElement.refresh();
+  }
 };
 
 loadedPromise.then(() => {

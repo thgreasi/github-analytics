@@ -108,7 +108,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <span class="space"></span>
 
           <!-- Toolbar icons -->
-          <paper-icon-button on-tap="reloadRepositories" icon="refresh"></paper-icon-button>
+          <paper-icon-button on-tap="reloadPage" icon="refresh"></paper-icon-button>
           <paper-icon-button icon="search"></paper-icon-button>
 
           <!-- Application name -->
@@ -133,7 +133,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <section data-route="repositories" tabindex="-1">
               <h1 class="page-title" tabindex="-1">Repositories</h1>
               <paper-material class="no-padding" elevation="1">
-                <repo-list items="{{ repos }}"></repo-list>
+                <repo-list page-element items="{{ repos }}"></repo-list>
               </paper-material>
             </section>
 

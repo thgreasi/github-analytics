@@ -50,6 +50,22 @@
           }
         },
 
+        refresh: function() {
+          this.items.map((repo) => {
+            return Promise.all([
+              repo.updateDetails().then(() => 'items.#${i}.stargazers_count'),
+              repo.updateDownloads().then(() => 'items.#${i}.downloads')
+            ].map((p) => p.then((path) => {
+              let i = this.items.indexOf(repo);
+              if (i >= 0) {
+                path = path.replace('${i}', i);
+                this.notifyPath(path, this.get(path));
+                // console.log(`Updated ${repo.name} ${path} Stars: ${app.get(path)}, dls: ${app.get(path)}`);
+              }
+            }))).catch((e) => { console.error('Error:', e); });
+          });
+        },
+
         ready: function() {
 
           // this.items = [
