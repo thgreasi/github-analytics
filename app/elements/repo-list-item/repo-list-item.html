@@ -62,7 +62,14 @@
     </style>
 
     <div class="reponame-cont">
-      <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
+      <template is="dom-if" if="{{!item.fork}}">
+        <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
+      </template>
+
+      <template is="dom-if" if="{{item.fork}}">
+        <iron-icon icon="app-svg-icons:repo-forked-icon"></iron-icon>
+      </template>
+
       <span class="repo-name">{{ item.name }}</span>
     </div>
 
