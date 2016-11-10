@@ -1,11 +1,10 @@
-import $ from 'jquery';
 import Rx from 'Rx';
 
 export class NpmService {
     static getDownloadCountsLastMonth (packageName) {
-        var promise = $.get(`https://api.npmjs.org/downloads/point/last-month/${packageName}`);
-        // return promise;
-        return Promise.resolve(promise).catch(function (err) {
+        return fetch(`https://api.npmjs.org/downloads/point/last-month/${packageName}`).then(function (response) {
+            return response.json();
+        }).catch(function (err) {
             console.log(err);
             return err;
         });

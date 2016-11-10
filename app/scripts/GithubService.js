@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import Rx from 'Rx';
 
 import RepositoryDetails from './RepositoryDetails';
@@ -8,31 +7,32 @@ const BASE_URL = 'https://api.github.com/';
 export class GithubService {
 
     static getUserInfo (username) {
-        var promise = $.get(BASE_URL + `users/${username}`);
-        // return promise;
-        return Promise.resolve(promise).catch(function (err) {
+        return fetch(BASE_URL + `users/${username}`).then(function (response) {
+            return response.json();
+        }).catch(function (err) {
             console.log(err);
             return err;
         });
     }
 
     static getUserOrgs (username) {
-        var promise = $.get(BASE_URL + `users/${username}/orgs`);
-        // return promise;
-        return Promise.resolve(promise).catch(function (err) {
+        return fetch(BASE_URL + `users/${username}/orgs`).then(function (response) {
+            return response.json();
+        }).catch(function (err) {
             console.log(err);
             return err;
         });
     }
 
     static getUserRepos (username) {
-        var promise = $.get(BASE_URL + `users/${username}/repos`);
-        // return promise;
-        return Promise.resolve(promise).then(function (repos) {
+        return fetch(BASE_URL + `users/${username}/repos`).then(function (response) {
+            return response.json();
+        }).then(function (repos) {
             return repos.map(function (repo) {
                 return {
                     id: repo.id,
                     name: repo.name,
+                    owner: repo.ownder,
                     full_name: repo.full_name,
                     description: repo.description,
                     fork: repo.fork,
@@ -52,10 +52,12 @@ export class GithubService {
     }
 
     static getRepoDetails (username, reponame) {
-        var promise = Promise.resolve($.get(BASE_URL + `repos/${username}/${reponame}`))
-            .then(repo => Object.assign(new RepositoryDetails(), repo));
-        // the only extras are: network_count & subscribers_count
-        return Promise.resolve(promise).catch(function (err) {
+        return fetch(BASE_URL + `repos/${username}/${reponame}`).then(function (response) {
+            return response.json();
+        }).then(repo => {
+            // the only extras are: network_count & subscribers_count
+            return Object.assign(new RepositoryDetails(), repo);
+        }).catch(function (err) {
             console.log(err);
             return err;
         });
@@ -63,9 +65,9 @@ export class GithubService {
 
     static searchUser (username) {
         // https://api.github.com/search/users?q=thgre
-        var promise = $.get(BASE_URL + `search/users?q=${username}`);
-        // the only extras are: network_count & subscribers_count
-        return Promise.resolve(promise).catch(function (err) {
+        return fetch(BASE_URL + `search/users?q=${username}`).then(function (response) {
+            return response.json();
+        }).catch(function (err) {
             console.log(err);
             return err;
         });
@@ -74,13 +76,12 @@ export class GithubService {
     // TODO: add TopN parameter
     static searchRepo (reponame) {
         // https://api.github.com/search/repositories?q=localfora
-        var promise = $.get(BASE_URL + `search/repositories?q=${reponame}`)
-            .then(result => {
-                result.items = result.items.map(repo => Object.assign(new RepositoryDetails(), repo));
-                return result;
-            });
-        // the only extras are: network_count & subscribers_count
-        return Promise.resolve(promise).catch(function (err) {
+        return fetch(BASE_URL + `search/repositories?q=${reponame}`).then(function (response) {
+            return response.json();
+        }).then(result => {
+            result.items = result.items.map(repo => Object.assign(new RepositoryDetails(), repo));
+            return result;
+        }).catch(function (err) {
             console.log(err);
             return err;
         });
