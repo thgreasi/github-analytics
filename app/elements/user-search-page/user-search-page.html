@@ -95,6 +95,11 @@
         is: 'user-search-page',
 
         properties: {
+          searchTermUnDebounced: {
+            type: String,
+            observer: '_searchTermUnDebouncedChangedObserver',
+          },
+
           searchTerm: {
             type: String,
             // value: 'Welcome!',
@@ -114,13 +119,12 @@
           }
         },
 
-        // debouncedClickAction: function(e) {
-        //   // will not call `processClick` more than once per 100ms
-        //   this.debounce('click', function() {
-        //    this.processClick();
-        //   }, 100);
-        // }, 
-        
+        _searchTermUnDebouncedChangedObserver: function (newValue) {
+          this.debounce('searchTermChanged', () => {
+            this.set('searchTerm', newValue);
+          }, 1000);
+        },
+
         ready: function() {
           
         }
