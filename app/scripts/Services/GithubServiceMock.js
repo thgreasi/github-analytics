@@ -1,7 +1,8 @@
 import $ from 'jquery';
 import Rx from 'Rx';
 
-import RepositoryDetails from './RepositoryDetails';
+import RepositoryDetails from '../Model/RepositoryDetails';
+
 import { mockUserData } from './MockData/GithubServiceMockUserData';
 import { mockUserOrgsData } from './MockData/GithubServiceMockUserOrgsData';
 import { mockRepoData } from './MockData/GithubServiceMockRepoData';

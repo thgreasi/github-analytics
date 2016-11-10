@@ -1,5 +1,5 @@
-import { GithubService } from './GithubServiceMock';
-import { NpmService } from './NpmServiceMock';
+import { GithubService } from '../Services/GithubServiceMock';
+import { NpmService } from '../Services/NpmServiceMock';
 
 export default class RepositoryDetails {
 

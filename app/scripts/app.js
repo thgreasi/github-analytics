@@ -4,14 +4,15 @@ import Rx from 'Rx';
 import { app, loadedPromise } from './appCore';
 import { init as appThemeInit } from './appTheme';
 
-import { GithubService } from './GithubServiceMock';
-import { NpmService } from './NpmServiceMock';
-import RepositoryDetails from './RepositoryDetails';
+import { GithubService } from './Services/GithubServiceMock';
+// For debug only
+import { NpmService } from './Services/NpmServiceMock';
+import RepositoryDetails from './Model/RepositoryDetails';
 
 
 appThemeInit();
 
-
+// For debug only
 app.GithubService = GithubService;
 app.NpmService = NpmService;
 app.RepositoryDetails = RepositoryDetails;

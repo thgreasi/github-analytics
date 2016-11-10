@@ -1,6 +1,6 @@
 import Rx from 'Rx';
 
-import RepositoryDetails from './RepositoryDetails';
+import RepositoryDetails from '../Model/RepositoryDetails';
 
 const BASE_URL = 'https://api.github.com/';
 
