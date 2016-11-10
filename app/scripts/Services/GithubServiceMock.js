@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import Rx from 'Rx';
 
 import RepositoryDetails from '../Model/RepositoryDetails';
