@@ -28,7 +28,7 @@
     </style>
 
     <ul>
-      <template is="dom-repeat" items="{{items}}">
+      <template is="dom-repeat" items="{{sortedItems}}">
         <li>
           <repo-list-item item={{item}}></repo-list-item>
         </li>
@@ -46,24 +46,59 @@
         properties: {
           items: {
             type: Array,
-            notify: true
+            notify: true,
+          },
+          sortedItems: {
+            type: Array,
+            notify: true,
+          },
+          sort: {
+            type: String,
+            value: () => ''
           }
         },
+
+        observers: [
+            '_itemsOrSortingChanged(items, sort)'
+        ],
 
         refresh: function() {
           this.items.map((repo) => {
             return Promise.all([
-              repo.updateDetails().then(() => 'items.#${i}.stargazers_count'),
-              repo.updateDownloads().then(() => 'items.#${i}.downloads')
+              repo.updateDetails().then(() => '#${i}.stargazers_count'),
+              repo.updateDownloads().then(() => '#${i}.downloads')
             ].map((p) => p.then((path) => {
               let i = this.items.indexOf(repo);
               if (i >= 0) {
-                path = path.replace('${i}', i);
-                this.notifyPath(path, this.get(path));
-                // console.log(`Updated ${repo.name} ${path} Stars: ${app.get(path)}, dls: ${app.get(path)}`);
+                let p = `items.${path.replace('${i}', i)}`;
+                this.notifyPath(p, this.get(p));
+              }
+              this._itemsOrSortingChanged(this.items, this.sort);
+              i = this.sortedItems.indexOf(repo);
+              if (i >= 0) {
+                let p = `sortedItems.${path.replace('${i}', i)}`;
+                this.notifyPath(p, this.get(p));
               }
             }))).catch((e) => { console.error('Error:', e); });
           });
+        },
+
+        _itemsOrSortingChanged: function (items, sort) {
+          let sortedItems = items.slice();
+          if (sort) {
+            sortedItems.sort((a, b) => {
+              let aa = a[sort];
+              let bb = b[sort];
+              if(aa < bb) {
+                return -1;
+              }
+              if(aa > bb) {
+                return 1;
+              }
+              return 0;
+            });
+          }
+          this.set('sortedItems', sortedItems);
         },
 
         ready: function() {

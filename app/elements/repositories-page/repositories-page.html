@@ -1,0 +1,158 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+<dom-module id="repositories-page">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+
+      span,
+      input {
+        @apply(--paper-font-body2);
+      }
+
+      ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+      }
+
+      header {
+        color: #6F6F6F;
+        margin-bottom: 0;
+      }
+
+      paper-spinner {
+        vertical-align: middle;
+      }
+
+      paper-material {
+        @apply(--paper-font-body2);
+      }
+
+      paper-material .subhead {
+        @apply(--paper-font-subhead);
+      }
+
+      paper-material {
+        border-radius: 2px;
+        height: 100%;
+        padding: 16px 0 16px 0;
+        width: calc(98.66% - 16px);
+        margin: 16px auto;
+        background: white;
+      }
+
+      header + paper-material {
+        margin-top: 0;
+      }
+
+      /* Breakpoints */
+
+      /* Small */
+      @media (max-width: 600px) {
+
+        paper-material {
+          --menu-container-display: none;
+          width: calc(97.33% - 32px);
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+
+      }
+
+      /* Tablet+ */
+      @media (min-width: 601px) {
+
+        paper-material {
+          width: calc(98% - 46px);
+          margin-bottom: 32px;
+          padding-left: 30px;
+          padding-right: 30px;
+        }
+
+      }
+    </style>
+
+    <paper-icon-button icon="sort" on-tap="openSortingDropDown"></paper-icon-button>
+    {{ sortingType }}
+    <iron-dropdown horizontal-align="left" vertical-align="top" opened={{sortingDropDownOpened}}>
+      <paper-material class="dropdown-content no-padding" elevation="1">
+        <paper-listbox selected="{{sortingType}}" attr-for-selected="myid">
+          <template is="dom-repeat" items="[[sortingOptions]]">
+            <paper-item myid="[[item.value]]">[[item.name]]</paper-item>
+          </template>
+        </paper-listbox>
+      </paper-material>
+    </iron-dropdown>
+    
+    <paper-material class="no-padding" elevation="1">
+      <repo-list items="{{ repos }}"></repo-list>
+    </paper-material>
+  </template>
+
+  <script>
+    (function() {
+      'use strict';
+
+      Polymer({
+        is: 'repositories-page',
+
+        properties: {
+          repos: {
+            type: Array,
+            notify: true,
+          },
+          sortingOptions: {
+            type: Array,
+            notify: true,
+            value: () => [
+              { name: 'No sort', value: 'none' },
+              { name: 'By name', value: 'name' },
+              { name: 'By stars', value: 'stargazers_count' },
+              { name: 'By downloads', value: 'downloads' }
+            ]
+          },
+          sortingType: {
+            type: String,
+            notify: true,
+            value: () => 'none'
+          },
+          sortingDropDownOpened: {
+            type: Boolean,
+            notify: true
+          }
+        },
+
+        openSortingDropDown: function () {
+          this.set('sortingDropDownOpened', true);
+        },
+
+        sortingOptionSelected: function () {
+          this.set('sortingDropDownOpened', false);
+        },
+
+        refresh: function() {
+          this.repos.map((repo) => {
+            return Promise.all([
+              repo.updateDetails().then(() => '#${i}.stargazers_count'),
+              repo.updateDownloads().then(() => '#${i}.downloads')
+            ].map((p) => p.then((path) => {
+              let i = this.repos.indexOf(repo);
+              if (i >= 0) {
+                let p = `repos.${path.replace('${i}', i)}`;
+                this.notifyPath(p, this.get(p));
+              }
+            }))).catch((e) => { console.error('Error:', e); });
+          });
+        },
+
+        ready: function() {
+
+        }
+      });
+    })();
+  </script>
+</dom-module>

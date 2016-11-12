@@ -137,9 +137,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             <section data-route="repositories" tabindex="-1">
               <h1 class="page-title" tabindex="-1">Repositories</h1>
+              <repositories-page page-element repos="{{repos}}"></repositories-page>
+              
+              <!-- <paper-icon-button icon="sort"></paper-icon-button>
+              <iron-dropdown horizontal-align="right" vertical-align="top">
+                <div class="dropdown-content">Hello!</div>
+              </iron-dropdown>
+              
               <paper-material class="no-padding" elevation="1">
                 <repo-list page-element items="{{ repos }}"></repo-list>
-              </paper-material>
+              </paper-material> -->
             </section>
 
             <section data-route="show-repos" tabindex="-1">
