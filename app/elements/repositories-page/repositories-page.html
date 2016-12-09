@@ -74,22 +74,35 @@
         }
 
       }
+
+      /* page styles */
+      .dropdown-content {
+        top: 20px;
+      }
+
+      .text-right {
+        text-align: right;
+      }
     </style>
 
-    <paper-icon-button icon="sort" on-tap="openSortingDropDown"></paper-icon-button>
-    {{ sortingType }}
-    <iron-dropdown horizontal-align="left" vertical-align="top" opened={{sortingDropDownOpened}}>
-      <paper-material class="dropdown-content no-padding" elevation="1">
-        <paper-listbox selected="{{sortingType}}" attr-for-selected="myid">
-          <template is="dom-repeat" items="[[sortingOptions]]">
-            <paper-item myid="[[item.value]]">[[item.name]]</paper-item>
-          </template>
-        </paper-listbox>
-      </paper-material>
-    </iron-dropdown>
+    <section class="text-right">
+      <paper-icon-button icon="sort" on-tap="openSortingDropDown"></paper-icon-button>
+
+      <iron-dropdown horizontal-align="right" vertical-align="top" opened={{sortingDropDownOpened}}>
+        <paper-material class="dropdown-content no-padding" elevation="1">
+          <paper-listbox attr-for-selected="value"
+              selected="{{ sortingType }}"
+              on-iron-select="sortingOptionSelected">
+            <template is="dom-repeat" items="[[sortingOptions]]">
+              <paper-item value="[[item.value]]">[[item.name]]</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-material>
+      </iron-dropdown>
+    </section>
     
     <paper-material class="no-padding" elevation="1">
-      <repo-list items="{{ repos }}"></repo-list>
+      <repo-list items="{{ repos }}" sort="{{ sortingType }}"></repo-list>
     </paper-material>
   </template>
 
@@ -140,6 +153,9 @@
               repo.updateDetails().then(() => '#${i}.stargazers_count'),
               repo.updateDownloads().then(() => '#${i}.downloads')
             ].map((p) => p.then((path) => {
+              if (!path) {
+                return;
+              }
               let i = this.repos.indexOf(repo);
               if (i >= 0) {
                 let p = `repos.${path.replace('${i}', i)}`;

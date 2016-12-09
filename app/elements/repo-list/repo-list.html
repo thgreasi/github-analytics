@@ -28,7 +28,7 @@
     </style>
 
     <ul>
-      <template is="dom-repeat" items="{{sortedItems}}">
+      <template is="dom-repeat" items="{{items}}"  sort="_sortItems">
         <li>
           <repo-list-item item={{item}}></repo-list-item>
         </li>
@@ -63,37 +63,75 @@
         ],
 
         refresh: function() {
-          this.items.map((repo) => {
+          return this.items.map(repo => {
             return Promise.all([
               repo.updateDetails().then(() => '#${i}.stargazers_count'),
               repo.updateDownloads().then(() => '#${i}.downloads')
-            ].map((p) => p.then((path) => {
+            ].map(p => p.then(path => {
               let i = this.items.indexOf(repo);
               if (i >= 0) {
                 let p = `items.${path.replace('${i}', i)}`;
                 this.notifyPath(p, this.get(p));
               }
-              this._itemsOrSortingChanged(this.items, this.sort);
-              i = this.sortedItems.indexOf(repo);
-              if (i >= 0) {
-                let p = `sortedItems.${path.replace('${i}', i)}`;
-                this.notifyPath(p, this.get(p));
-              }
-            }))).catch((e) => { console.error('Error:', e); });
+              // this._itemsOrSortingChanged(this.items, this.sort);
+              // i = this.sortedItems.indexOf(repo);
+              // if (i >= 0) {
+              //   let p = `sortedItems.${path.replace('${i}', i)}`;
+              //   this.notifyPath(p, this.get(p));
+              // }
+              // return path;
+            }))).catch(e => { console.error('Error:', e); });
+          }).then(itemsWithPaths => {
+            console.log(itemsWithPaths);
+            // this._itemsOrSortingChanged(this.items, this.sort);
+            // itemsWithPaths.forEach(itemPaths => {
+            //   itemPaths.forEach(path => {
+            //     let i = this.sortedItems.indexOf(repo);
+            //     if (i >= 0) {
+            //       let p = `sortedItems.${path.replace('${i}', i)}`;
+            //       this.notifyPath(p, this.get(p));
+            //     }
+            //     return path;
+            //   });
+            // });
+
+            // return itemsWithPaths;
           });
+        },
+
+        _sortItems: function(a,b) {
+          if (!this.sort || !(this.sort in this.items[0])) {
+            return 0;
+          }
+          
+          let ascSorting = !this.sort || this.sort === 'name' ? 1 : -1;
+
+          let aa = a[this.sort];
+          let bb = b[this.sort];
+          if(aa < bb) {
+            return -1 * ascSorting;
+          }
+          if(aa > bb) {
+            return 1 * ascSorting;
+          }
+          return 0;
         },
 
         _itemsOrSortingChanged: function (items, sort) {
           let sortedItems = items.slice();
-          if (sort) {
+          if (sortedItems.length &&
+              sort &&
+              sort in sortedItems[0]) {
             sortedItems.sort((a, b) => {
+              let ascSorting = !sort || sort === 'name' ? 1 : -1;
+
               let aa = a[sort];
               let bb = b[sort];
               if(aa < bb) {
-                return -1;
+                return -1 * ascSorting;
               }
               if(aa > bb) {
-                return 1;
+                return 1 * ascSorting;
               }
               return 0;
             });
