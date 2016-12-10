@@ -19,6 +19,10 @@
         margin: 0;
       }
 
+      /*li {
+        cursor: pointer;
+      }*/
+
       header {
         color: #6F6F6F;
         margin-bottom: 0;
@@ -89,10 +93,13 @@
         <header>Users</header>
         <paper-material elevation="1">
           <ul>
+
             <template is="dom-repeat" items="{{userInfos}}">
-              <li>
-                <iron-icon icon="app-svg-icons:github-icon"></iron-icon>
-                <span class="user-name">{{item.login}}</span>
+              <li on-tap="openUserInfoDialog">
+                <paper-item>
+                  <iron-icon icon="app-svg-icons:github-icon"></iron-icon>
+                  <span class="user-name">{{item.login}}</span>
+                </paper-item>
               </li>
             </template>
           </ul>
@@ -129,6 +136,49 @@
         </paper-material>
       </template>
     </section>
+
+
+    <paper-dialog id="userInfoDialog">
+      <h2>Repos</h2>
+      <paper-dialog-scrollable>
+
+        <template is="dom-if" if="{{selectedUserReposPromise}}">
+          <paper-spinner active></paper-spinner>
+        </template>
+
+        <template is="dom-if" if="{{selectedUserRepos.length}}">
+          <ul>
+            <template is="dom-repeat" items="{{selectedUserRepos}}">
+              <li class="paper-item">
+                <paper-checkbox on-tap="checkUserRepo"></paper-checkbox>
+
+                <template is="dom-if" if="{{!item.fork}}">
+                  <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
+                </template>
+
+                <template is="dom-if" if="{{item.fork}}">
+                  <iron-icon icon="app-svg-icons:repo-forked-icon"></iron-icon>
+                </template>
+
+                <span class="repo-name">{{item.full_name}}</span>
+              </li>
+            </template>
+          </ul>
+        </template>
+
+        <template is="dom-if" if="{{!selectedUserReposPromise}}">
+          <template is="dom-if" if="{{!selectedUserRepos.length}}">
+            No repositories found!
+          </template>
+        </template>
+        
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm autofocus on-tap="userInfoDialogOK">OK</paper-button>
+      </div>
+    </paper-dialog>
+
   </template>
 
   <script>
@@ -198,6 +248,33 @@
             notify: true,
             readOnly: true
           },
+
+          selectedUser: {
+            type: Object,
+            default: f => {
+              return null;
+            },
+            notify: true,
+            readOnly: true
+          },
+
+          selectedUserReposPromise: {
+            type: Object,
+            default: f => {
+              return null;
+            },
+            notify: true,
+            readOnly: true
+          },
+
+          selectedUserRepos: {
+            type: Array,
+            default: f => {
+              return [];
+            },
+            notify: true,
+            readOnly: true
+          },
         },
 
         // debouncedClickAction: function(e) {
@@ -250,7 +327,28 @@
             });
           }
         },
-        
+
+        openUserInfoDialog: function (e, detail) {
+          this._setSelectedUser(e.model.item);
+          this._setSelectedUserRepos([]);
+          this._setSelectedUserReposPromise(this.searchProvider
+            .getUserRepos(e.model.item.login)
+            .then(repos => {
+              this._setSelectedUserRepos(repos);
+              this._setSelectedUserReposPromise(null);
+              return repos;
+            }));
+          userInfoDialog.open();
+        },
+
+        checkUserRepo: function (e, detail) {
+
+        },
+
+        userInfoDialogOK: function (e, detail) {
+
+        },
+
         ready: function() {
           
         }
