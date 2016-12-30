@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
 
 <dom-module id="repo-list-item">
   <template>
@@ -8,6 +9,7 @@
         display: flex;
         line-height: 1em;
         flex-flow: row;
+        align-items: center;
       }
 
       .reponame-cont {
@@ -42,6 +44,14 @@
       .repo-name {
         font-size: 1.5em;
         vertical-align: middle;
+      }
+
+      [icon="star"] {
+        color: var(--paper-yellow-700);
+      }
+
+      [icon="file-download"] {
+        color: var(--paper-blue-a700);
       }
 
       .downloads-cont,

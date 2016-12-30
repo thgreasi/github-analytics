@@ -79,6 +79,17 @@
 
       }
 
+      .user-name-li {
+        @apply(--paper-font-body1);
+        position: relative;
+        padding: 8px 0;
+        cursor: pointer;
+      }
+
+      .user-name {
+        font-size: 1.5em;
+      }
+
     </style>
     
     <section>
@@ -93,13 +104,11 @@
         <header>Users</header>
         <paper-material elevation="1">
           <ul>
-
             <template is="dom-repeat" items="{{userInfos}}">
-              <li on-tap="openUserInfoDialog">
-                <paper-item>
-                  <iron-icon icon="app-svg-icons:github-icon"></iron-icon>
-                  <span class="user-name">{{item.login}}</span>
-                </paper-item>
+              <li class="user-name-li" on-tap="openUserInfoDialog">
+                <iron-icon icon="app-svg-icons:github-icon"></iron-icon>
+                <span class="user-name">{{item.login}}</span>
+                <paper-ripple></paper-ripple>
               </li>
             </template>
           </ul>
@@ -121,15 +130,7 @@
           <ul>
             <template is="dom-repeat" items="{{repoInfos}}">
               <li>
-                <template is="dom-if" if="{{!item.fork}}">
-                  <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
-                </template>
-
-                <template is="dom-if" if="{{item.fork}}">
-                  <iron-icon icon="app-svg-icons:repo-forked-icon"></iron-icon>
-                </template>
-
-                <span class="repo-name">{{item.full_name}}</span>
+                <search-repo-list-item item="{{item}}"></search-repo-list-item>
               </li>
             </template>
           </ul>
@@ -149,18 +150,8 @@
         <template is="dom-if" if="{{selectedUserRepos.length}}">
           <ul>
             <template is="dom-repeat" items="{{selectedUserRepos}}">
-              <li class="paper-item">
-                <paper-checkbox on-tap="checkUserRepo"></paper-checkbox>
-
-                <template is="dom-if" if="{{!item.fork}}">
-                  <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
-                </template>
-
-                <template is="dom-if" if="{{item.fork}}">
-                  <iron-icon icon="app-svg-icons:repo-forked-icon"></iron-icon>
-                </template>
-
-                <span class="repo-name">{{item.full_name}}</span>
+              <li>
+                <search-repo-list-item item="{{item}}"></search-repo-list-item>
               </li>
             </template>
           </ul>
@@ -193,7 +184,7 @@
             type: String,
             // value: 'Welcome!',
             notify: true,
-            observer: '_searchTermChanged'
+            observer: '_debounced_searchTermChanged'
           },
 
           searchProvider: {
@@ -277,12 +268,11 @@
           },
         },
 
-        // debouncedClickAction: function(e) {
-        //   // will not call `processClick` more than once per 100ms
-        //   this.debounce('click', function() {
-        //    this.processClick();
-        //   }, 100);
-        // },
+        _debounced_searchTermChanged: function() {
+          this.debounce('_searchTermChanged', function() {
+           this._searchTermChanged();
+          }, 500);
+        },
 
         _searchTermChanged: function () {
           if (!this.searchTerm || this.searchTerm.length < 3) {
