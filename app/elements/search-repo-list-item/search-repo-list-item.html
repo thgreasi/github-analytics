@@ -75,10 +75,10 @@
 
     <paper-checkbox class="comparison-checkbox" on-tap="checkUserRepo"></paper-checkbox>
     
-    <template is="dom-if" if="{{!item.saved}}">
+    <template is="dom-if" if="{{!isSaved}}">
       <paper-icon-button class="bookmark-checkbox" icon="icons:star-border" on-tap="saveUserRepo"></paper-icon-button>
     </template>
-    <template is="dom-if" if="{{item.saved}}">
+    <template is="dom-if" if="{{isSaved}}">
       <paper-icon-button class="bookmark-checkbox" icon="icons:star" on-tap="removeUserRepo"></paper-icon-button>
     </template>
   </template>
@@ -94,26 +94,60 @@
           item: {
             type: Object,
             notify: true,
-            value: function() { return {}; }
+            value: function() { return {}; },
+            observer: '_itemChanged'
           },
           markedItems: {
             type: Array,
             notify: true,
             value: function() { return []; }
           },
-          savedItems: {
-            type: Array,
-            notify: true,
-            value: function() { return []; }
+          markedItem: {
+            type: Object,
+            readOnly: true
           },
           isMarked: {
             type: Boolean,
+            readOnly: true
+          },
+
+          savedItems: {
+            type: Array,
+            notify: true
+          },
+          savedItem: {
+            type: Object,
             readOnly: true
           },
           isSaved: {
             type: Boolean,
             readOnly: true
           }
+        },
+
+        observers: [
+            '_itemChanged(item, savedItems)'
+        ],
+
+        _itemChanged: function() {
+          if (this.item &&
+              this.savedItems &&
+              this.savedItems.length) {
+
+            if (!this.savedItem ||
+                this.savedItem.full_name != this.item.full_name ||
+                this.savedItems.indexOf(savedItem) < 0) {
+              this._setSavedItem(
+                this.savedItems
+                  .filter(x => x.full_name === this.item.full_name)
+                  .shift());
+            }
+          }
+          this._setIsSaved(!!this.savedItem);
+        },
+
+        ready: function() {
+
         }
       });
     })();

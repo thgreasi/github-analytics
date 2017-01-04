@@ -132,12 +132,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <iron-pages attr-for-selected="data-route" selected="{{route}}">
             <section data-route="home" tabindex="-1">
               <h1 class="page-title" tabindex="-1">Search</h1>
-              <user-search-page search-provider="{{ GithubService }}"></user-search-page>
+              <user-search-page search-provider="{{ GithubService }}" saved-repos="{{ repos }}"></user-search-page>
             </section>
 
             <section data-route="repositories" tabindex="-1">
               <h1 class="page-title" tabindex="-1">Repositories</h1>
-              <repositories-page page-element repos="{{repos}}"></repositories-page>
+              <repositories-page page-element repos="{{ repos }}"></repositories-page>
               
               <!-- <paper-icon-button icon="sort"></paper-icon-button>
               <iron-dropdown horizontal-align="right" vertical-align="top">

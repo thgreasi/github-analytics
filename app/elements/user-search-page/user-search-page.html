@@ -84,7 +84,7 @@
       </div>
     </paper-material>
     
-    <github-search search-term="{{ searchTerm }}" search-provider="{{ searchProvider }}"></github-search>
+    <github-search search-term="{{ searchTerm }}" search-provider="{{ searchProvider }}" saved-repos="{{ savedRepos }}"></github-search>
   </template>
 
   <script>
@@ -116,7 +116,12 @@
               };
             },
             notify: true
-          }
+          },
+
+          savedRepos: {
+            type: Array,
+            notify: true
+          },
         },
 
         _searchTermUnDebouncedChangedObserver: function (newValue) {

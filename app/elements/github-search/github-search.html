@@ -130,7 +130,7 @@
           <ul>
             <template is="dom-repeat" items="{{repoInfos}}">
               <li>
-                <search-repo-list-item item="{{item}}"></search-repo-list-item>
+                <search-repo-list-item item="{{item}}" saved-items="{{ savedRepos }}"></search-repo-list-item>
               </li>
             </template>
           </ul>
@@ -151,7 +151,7 @@
           <ul>
             <template is="dom-repeat" items="{{selectedUserRepos}}">
               <li>
-                <search-repo-list-item item="{{item}}"></search-repo-list-item>
+                <search-repo-list-item item="{{item}}" saved-items="{{ savedRepos }}"></search-repo-list-item>
               </li>
             </template>
           </ul>
@@ -196,6 +196,11 @@
                 }
               };
             },
+            notify: true
+          },
+
+          savedRepos: {
+            type: Array,
             notify: true
           },
 
