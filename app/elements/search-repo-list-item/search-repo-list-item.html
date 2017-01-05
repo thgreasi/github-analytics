@@ -75,12 +75,14 @@
 
     <paper-checkbox class="comparison-checkbox" on-tap="checkUserRepo"></paper-checkbox>
     
-    <template is="dom-if" if="{{!isSaved}}">
-      <paper-icon-button class="bookmark-checkbox" icon="icons:star-border" on-tap="saveUserRepo"></paper-icon-button>
-    </template>
-    <template is="dom-if" if="{{isSaved}}">
-      <paper-icon-button class="bookmark-checkbox" icon="icons:star" on-tap="removeUserRepo"></paper-icon-button>
-    </template>
+    <div on-tap="toggleSaveUserRepo">
+      <template is="dom-if" if="{{!isSaved}}">
+        <paper-icon-button class="bookmark-checkbox" icon="icons:star-border"></paper-icon-button>
+      </template>
+      <template is="dom-if" if="{{isSaved}}">
+        <paper-icon-button class="bookmark-checkbox" icon="icons:star"></paper-icon-button>
+      </template>
+    </div>
   </template>
 
   <script>
@@ -135,8 +137,8 @@
               this.savedItems.length) {
 
             if (!this.savedItem ||
-                this.savedItem.full_name != this.item.full_name ||
-                this.savedItems.indexOf(savedItem) < 0) {
+                this.savedItem.full_name !== this.item.full_name ||
+                this.savedItems.indexOf(this.savedItem) < 0) {
               this._setSavedItem(
                 this.savedItems
                   .filter(x => x.full_name === this.item.full_name)
@@ -144,6 +146,17 @@
             }
           }
           this._setIsSaved(!!this.savedItem);
+        },
+
+        toggleSaveUserRepo: function() {
+          if (this.savedItems) {
+            if (this.isSaved) {
+              this.savedItems.splice(this.savedItems.indexOf(this.savedItem), 1);
+            } else {
+              this.savedItems.push(this.item);
+            }
+            this.set('savedItems', this.savedItems.slice());
+          }
         },
 
         ready: function() {
