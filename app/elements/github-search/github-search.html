@@ -116,7 +116,7 @@
       </template>
     </section>
 
-    <section>
+    <section class="search-results-repos">
       <template is="dom-if" if="{{activeRepoPromise}}">
         <header>
           Repos
@@ -125,7 +125,23 @@
       </template>
 
       <template is="dom-if" if="{{repoInfos.length}}">
-        <header>Repos</header>
+        <header>
+          <span>Repos</span>
+
+          <paper-button on-tap="toggleRepoListItemsSelection"
+            data-target-container=".search-results-repos"
+            data-target-type="!fork">
+            <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
+            <iron-icon icon="icons:star-half"></iron-icon>
+          </paper-button>
+
+          <paper-button on-tap="toggleRepoListItemsSelection"
+            data-target-container=".search-results-repos"
+            data-target-type="fork">
+            <iron-icon icon="app-svg-icons:repo-forked-icon"></iron-icon>
+            <iron-icon icon="icons:star-half"></iron-icon>
+          </paper-button>
+        </header>
         <paper-material elevation="1">
           <ul>
             <template is="dom-repeat" items="{{repoInfos}}">
@@ -140,7 +156,23 @@
 
 
     <paper-dialog id="userInfoDialog">
-      <h2>Repos</h2>
+      <header>
+        <h2>Repos</h2>
+
+        <paper-button on-tap="toggleRepoListItemsSelection"
+          data-target-container="#userInfoDialog"
+          data-target-type="!fork">
+          <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
+          <iron-icon icon="icons:star-half"></iron-icon>
+        </paper-button>
+
+        <paper-button on-tap="toggleRepoListItemsSelection"
+          data-target-container="#userInfoDialog"
+          data-target-type="fork">
+          <iron-icon icon="app-svg-icons:repo-forked-icon"></iron-icon>
+          <iron-icon icon="icons:star-half"></iron-icon>
+        </paper-button>
+      </header>
       <paper-dialog-scrollable>
 
         <template is="dom-if" if="{{selectedUserReposPromise}}">
@@ -323,6 +355,48 @@
           }
         },
 
+        toggleRepoListItemsSelection: function (e, detail) {
+          var button = (e.currentTarget || e.target);
+          var items = Array.prototype.slice.apply(
+            document.querySelectorAll(`${button.dataset.targetContainer} search-repo-list-item`));
+
+          if (button.dataset.targetType) {
+            let invertFilter = button.dataset.targetType.indexOf('!') === 0;
+            let filterPropName = button.dataset.targetType;
+            if (invertFilter) {
+              filterPropName = filterPropName.replace('!', '');
+            }
+
+            items = items.filter(element =>
+              element.item &&
+              (!element.item[filterPropName]) === invertFilter);
+          }
+          this._toggleRepoListItemsSelection(items);
+        },
+
+        _toggleRepoListItemsSelection: function (items) {
+          var selected = [];
+          var unselected = [];
+
+          items.forEach((element) => {
+            if (element.isSaved) {
+              selected.push(element);
+            } else {
+              unselected.push(element);
+            }
+          });
+
+          if (selected.length === items.length) {
+            selected.forEach((element) => {
+              element.toggleSaveUserRepo();
+            });
+          } else {
+            unselected.forEach((element) => {
+              element.toggleSaveUserRepo();
+            });
+          }
+        },
+
         openUserInfoDialog: function (e, detail) {
           this._setSelectedUser(e.model.item);
           this._setSelectedUserRepos([]);
@@ -334,10 +408,6 @@
               return repos;
             }));
           userInfoDialog.open();
-        },
-
-        checkUserRepo: function (e, detail) {
-
         },
 
         userInfoDialogOK: function (e, detail) {
