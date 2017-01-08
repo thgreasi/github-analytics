@@ -26,13 +26,60 @@
         }
       }
 
+      /******************
+       * my core styles *
+       ******************/
+
+      .block-level {
+        display: block;
+        width: 100%;
+      }
+
       .no-padding {
         padding: 0;
       }
 
+      .no-margin {
+        margin: 0;
+      }
+
+      .clearfix:before,
+      .clearfix:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+
+      .floatleft {
+        float: left;
+      }
+
+      .floatright: {
+        float: right;
+      }
+
+      .flex-item-with-addons {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: right;
+      }
+
+      .flex-main-item {
+        flex: 1 0 auto;
+      }
+
+      .flex-item-addon {
+        flex: 0 0 auto;
+      }
+
+      /******************************
+       * my element specific styles *
+       ******************************/
+
       paper-material.no-padding {
         width: 100%;
       }
+
     </style>
   </template>
 </dom-module>
