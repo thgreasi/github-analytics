@@ -43,6 +43,12 @@
         margin: 0;
       }
 
+      ul.unstyled {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+      }
+
       .clearfix:before,
       .clearfix:after {
         content: "";
@@ -77,8 +83,14 @@
        * my element specific styles *
        ******************************/
 
+      /* needed the extra specificity */
       paper-material.no-padding {
         width: 100%;
+      }
+
+      li.paper-list-item {
+        border: 1px solid rgba(0, 0, 0, 0.14);
+        padding-left: 0.7em;
       }
 
     </style>

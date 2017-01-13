@@ -13,16 +13,6 @@
         @apply(--paper-font-body2);
       }
 
-      ul {
-        list-style: none;
-        padding-left: 0;
-        margin: 0;
-      }
-
-      /*li {
-        cursor: pointer;
-      }*/
-
       header {
         color: #6F6F6F;
         margin-bottom: 0;
@@ -102,10 +92,10 @@
 
       <template is="dom-if" if="{{userInfos.length}}">
         <header>Users</header>
-        <paper-material elevation="1">
-          <ul>
+        <paper-material class="no-padding" elevation="1">
+          <ul class="unstyled">
             <template is="dom-repeat" items="{{userInfos}}">
-              <li class="user-name-li" on-tap="openUserInfoDialog">
+              <li class="paper-list-item user-name-li" on-tap="openUserInfoDialog">
                 <iron-icon icon="app-svg-icons:github-icon"></iron-icon>
                 <span class="user-name">{{item.login}}</span>
                 <paper-ripple></paper-ripple>
@@ -125,27 +115,29 @@
       </template>
 
       <template is="dom-if" if="{{repoInfos.length}}">
-        <header>
-          <span>Repos</span>
+        <header class="flex-item-with-addons">
+          <span class="flex-main-item">Repos</span>
 
-          <paper-button on-tap="toggleRepoListItemsSelection"
+          <paper-button class="flex-item-addon"
+            on-tap="toggleRepoListItemsSelection"
             data-target-container=".search-results-repos"
             data-target-type="!fork">
             <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
             <iron-icon icon="icons:star-half"></iron-icon>
           </paper-button>
 
-          <paper-button on-tap="toggleRepoListItemsSelection"
+          <paper-button class="flex-item-addon"
+            on-tap="toggleRepoListItemsSelection"
             data-target-container=".search-results-repos"
             data-target-type="fork">
             <iron-icon icon="app-svg-icons:repo-forked-icon"></iron-icon>
             <iron-icon icon="icons:star-half"></iron-icon>
           </paper-button>
         </header>
-        <paper-material elevation="1">
-          <ul>
+        <paper-material class="no-padding" elevation="1">
+          <ul class="unstyled">
             <template is="dom-repeat" items="{{repoInfos}}">
-              <li>
+              <li class="paper-list-item">
                 <search-repo-list-item item="{{item}}" saved-items="{{ savedRepos }}"></search-repo-list-item>
               </li>
             </template>
@@ -156,17 +148,19 @@
 
 
     <paper-dialog id="userInfoDialog">
-      <header>
-        <h2>Repos</h2>
+      <header class="flex-item-with-addons">
+        <h2 class="flex-main-item">Repos</h2>
 
-        <paper-button on-tap="toggleRepoListItemsSelection"
+        <paper-button class="flex-item-addon"
+          on-tap="toggleRepoListItemsSelection"
           data-target-container="#userInfoDialog"
           data-target-type="!fork">
           <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
           <iron-icon icon="icons:star-half"></iron-icon>
         </paper-button>
 
-        <paper-button on-tap="toggleRepoListItemsSelection"
+        <paper-button class="flex-item-addon"
+          on-tap="toggleRepoListItemsSelection"
           data-target-container="#userInfoDialog"
           data-target-type="fork">
           <iron-icon icon="app-svg-icons:repo-forked-icon"></iron-icon>
@@ -180,9 +174,9 @@
         </template>
 
         <template is="dom-if" if="{{selectedUserRepos.length}}">
-          <ul>
+          <ul class="unstyled">
             <template is="dom-repeat" items="{{selectedUserRepos}}">
-              <li>
+              <li class="paper-list-item">
                 <search-repo-list-item item="{{item}}" saved-items="{{ savedRepos }}"></search-repo-list-item>
               </li>
             </template>
