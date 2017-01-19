@@ -78,10 +78,19 @@
     </style>
 
     <paper-material elevation="1">
-      <label for="user-input">Search by user or organization:</label>
+      <!-- <label for="user-input">Search by user or organization:</label>
       <div>
         <input id="user-input" value="{{searchTerm::input}}" placeholder="3 characters min">
-      </div>
+      </div> -->
+
+      <form is="iron-form" id="searchForm">
+        <paper-input bind-value="{{searchTermTmp}}"
+                     label="Search by user or organization">
+          <paper-icon-button suffix on-tap="setSearchTerm"
+                             icon="search" alt="search" title="search">
+          </paper-icon-button>
+        </paper-input>
+      </form>
     </paper-material>
     
     <github-search search-term="{{ searchTerm }}" 
@@ -108,6 +117,12 @@
             notify: true
           },
 
+          searchTermTmp: {
+            type: String,
+            // value: 'Welcome!',
+            notify: false
+          },
+
           searchProvider: {
             type: Object,
             default: f => {
@@ -132,8 +147,15 @@
           }, 1000);
         },
 
+        setSearchTerm: function () {
+          this.set('searchTerm', this.searchTermTmp);
+        },
+
         ready: function() {
-          
+          this.$.searchForm.addEventListener('iron-form-presubmit', event => {
+            event.preventDefault();
+            this.setSearchTerm();
+          });
         }
       });
     })();
