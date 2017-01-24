@@ -77,6 +77,8 @@
 
     </style>
 
+    <polymer-localforage id="lastSearchTermStorage" name="search.searchTerms.last" use-raw value="{{searchTerm}}"></polymer-localforage>
+
     <paper-material elevation="1">
       <!-- <label for="user-input">Search by user or organization:</label>
       <div>
@@ -84,7 +86,7 @@
       </div> -->
 
       <form is="iron-form" id="searchForm">
-        <paper-input bind-value="{{searchTermTmp}}"
+        <paper-input id="searchInput" bind-value="{{searchTermTmp}}"
                      label="Search by user or organization">
           <paper-icon-button suffix on-tap="setSearchTerm"
                              icon="search" alt="search" title="search">
@@ -144,11 +146,12 @@
         _searchTermUnDebouncedChangedObserver: function (newValue) {
           this.debounce('searchTermChanged', () => {
             this.set('searchTerm', newValue);
+
           }, 1000);
         },
 
         setSearchTerm: function () {
-          this.set('searchTerm', this.searchTermTmp);
+          this.set('searchTerm', this.searchTermTmp || '');
         },
 
         ready: function() {
@@ -156,6 +159,19 @@
             event.preventDefault();
             this.setSearchTerm();
           });
+
+
+          // we should use the promise returned by LF if the polymer package gets ever updated
+          var lastValueLoadedFn = () => {
+            if (this.searchTermTmp === undefined && this.searchTerm !== undefined) {
+              this.$.lastSearchTermStorage.removeEventListener('value-changed', lastValueLoadedFn);
+              this.set('searchTermTmp', this.searchTerm || '');
+              this.$.searchInput.value = this.searchTermTmp;
+            }
+          };
+          this.$.lastSearchTermStorage.addEventListener('value-changed', lastValueLoadedFn);
+
+          this.$.lastSearchTermStorage.load();
         }
       });
     })();
