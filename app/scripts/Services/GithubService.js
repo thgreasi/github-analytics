@@ -63,6 +63,8 @@ export class GithubService {
         });
     }
 
+    // https://developer.github.com/v3/search/#search-users
+    // file:///home/teo/Drive/Dev/githubAnalytics/research/docs/Search%20|%20GitHub%20Developer%20Guide.html#search-users
     static searchUser (username) {
         // https://api.github.com/search/users?q=thgre
         return fetch(BASE_URL + `search/users?q=${username}`).then(function (response) {
@@ -74,6 +76,8 @@ export class GithubService {
     }
 
     // TODO: add TopN parameter
+    // https://developer.github.com/v3/search/#search-repositories
+    // file:///home/teo/Drive/Dev/githubAnalytics/research/docs/Search%20|%20GitHub%20Developer%20Guide.html#search-repositories
     static searchRepo (reponame) {
         // https://api.github.com/search/repositories?q=localfora
         return fetch(BASE_URL + `search/repositories?q=${reponame}`).then(function (response) {
