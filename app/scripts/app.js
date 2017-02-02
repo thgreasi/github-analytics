@@ -47,6 +47,8 @@ var reposOnLoadPromise = localforage.getItem('data.repos').then(repos => {
       repos = [];
     }
 
+    repos = repos.map(repo => Object.assign(new RepositoryDetails(), repo));
+
     console.log('LOADED!', repos);
     return repos;
 }).catch(() => {});
