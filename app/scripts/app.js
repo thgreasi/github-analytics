@@ -42,10 +42,35 @@ app.reloadPage = function() {
   }
 };
 
-loadedPromise.then(() => {
+var reposOnLoadPromise = localforage.getItem('data.repos').then(repos => {
+    if (!Array.isArray(repos)) {
+      repos = [];
+    }
 
-  var userReposPromise = GithubService.getUserRepos('thgreasi');
-  var orgsPromise = GithubService.getUserOrgs('thgreasi');
+    console.log('LOADED!', repos);
+    return repos;
+}).catch(() => {});
+
+loadedPromise.then(() => {
+  console.log('loadedPromise');
+  return  reposOnLoadPromise.then(repos => {
+    app.$.dataReposStorage.set('autoSaveDisabled', false);
+    app.set('repos', repos);
+    console.log('SET repos', repos);
+
+    if (repos.length) {
+      app.route = 'repositories';
+      setTimeout(() => app.reloadPage(), 0);
+    }
+  });
+
+  // return getUserAndOrgRepos('thgreasi');
+
+});
+
+function getUserAndOrgRepos(username) {
+  var userReposPromise = GithubService.getUserRepos(username);
+  var orgsPromise = GithubService.getUserOrgs(username);
 
   var overallPromises = [processRepoInfosPromise(userReposPromise)];
 
@@ -54,7 +79,7 @@ loadedPromise.then(() => {
   }));
 
   return Promise.all([overallPromises]);
-});
+}
 
 
 function processRepoInfos (repos) {

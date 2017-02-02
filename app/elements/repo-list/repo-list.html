@@ -119,7 +119,8 @@
 
         _itemsOrSortingChanged: function (items, sort) {
           let sortedItems = items.slice();
-          if (sortedItems.length &&
+          if (sortedItems &&
+              sortedItems.length &&
               sort &&
               sort in sortedItems[0]) {
             sortedItems.sort((a, b) => {

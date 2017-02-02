@@ -65,6 +65,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <!-- endbuild -->
 
   <template is="dom-bind" id="app">
+    <polymer-localforage id="dataReposStorage"
+                         name="data.repos"
+                         value="{{repos}}"
+                         auto-save-disabled
+                         use-raw></polymer-localforage>
 
     <paper-drawer-panel id="paperDrawerPanel">
       <!-- Drawer Scroll Header Panel -->

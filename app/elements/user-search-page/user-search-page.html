@@ -77,7 +77,10 @@
 
     </style>
 
-    <polymer-localforage id="lastSearchTermStorage" name="search.searchTerms.last" use-raw value="{{searchTerm}}"></polymer-localforage>
+    <polymer-localforage id="lastSearchTermStorage"
+                         name="search.searchTerms.last"
+                         value="{{searchTerm}}"
+                         use-raw></polymer-localforage>
 
     <paper-material elevation="1">
       <!-- <label for="user-input">Search by user or organization:</label>
@@ -159,7 +162,6 @@
             event.preventDefault();
             this.setSearchTerm();
           });
-
 
           // we should use the promise returned by LF if the polymer package gets ever updated
           var lastValueLoadedFn = () => {
