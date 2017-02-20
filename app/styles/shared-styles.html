@@ -80,13 +80,75 @@
       }
 
       /******************************
-       * my element specific styles *
+       *       paper-material       *
        ******************************/
 
-      /* needed the extra specificity */
-      paper-material.no-padding {
-        width: 100%;
+      paper-material {
+        @apply(--paper-font-body2);
       }
+
+      paper-material .subhead {
+        @apply(--paper-font-subhead);
+      }
+
+      header + paper-material {
+        margin-top: 0;
+      }
+
+      paper-material {
+        border-radius: 2px;
+        height: 100%;
+        width: calc(98.66% - 16px);
+        padding: 16px 0 16px 0;
+        margin: 16px auto;
+        background: white;
+      }
+
+      paper-material.no-padding,
+      .paper-material-sizer {
+        width: calc(98.66% + 16px);
+        margin: 16px auto;
+      }
+
+      /* Breakpoints */
+
+      /* Small */
+      @media (max-width: 600px) {
+
+        paper-material {
+          --menu-container-display: none;
+          width: calc(97.33% - 32px);
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+        
+        paper-material.no-padding,
+        .paper-material-sizer {
+          width: 97.33%;
+        }
+
+      }
+
+      /* Tablet+ */
+      @media (min-width: 601px) {
+
+        paper-material {
+          width: calc(98% - 46px);
+          margin-bottom: 32px;
+          padding-left: 30px;
+          padding-right: 30px;
+        }
+        
+        paper-material.no-padding,
+        .paper-material-sizer {
+          width: calc(98% + 14px);
+        }
+
+      }
+
+      /******************************
+       * my element specific styles *
+       ******************************/
 
       li.paper-list-item {
         border: 1px solid rgba(0, 0, 0, 0.14);

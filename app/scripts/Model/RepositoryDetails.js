@@ -41,6 +41,28 @@ export default class RepositoryDetails {
             return repo;
         });
     }
+    
+    /*updateDetails (setPathFn) {
+        var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
+        return searchProvider.getCityWeatherByID(this.id).then(data => {
+            console.log('asdf', data);
+            if (!data || !data.id) {
+                return;
+            }
+            Object.keys(data).forEach(key => {
+                var newProp = data[key];
+                if (this[key] !== newProp) {
+                    // this.set(`items.#${index}.${key}`, newProp);
+                    if (typeof setPathFn === 'function') {
+                        setPathFn(`.${key}`, newProp);
+                    } else {
+                        this[key] = newProp;
+                    }
+                }
+            });
+            return data;
+        });
+    }*/
 
     setDownloads (value) {
         if (value !== +value) {

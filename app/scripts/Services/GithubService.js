@@ -81,7 +81,8 @@ export class GithubService {
     static searchRepo (reponame) {
         // https://api.github.com/search/repositories?q=localfora
         return fetch(BASE_URL + `search/repositories?q=${reponame}`).then(function (response) {
-            return response.json();
+            var result = response.json();
+            return result;
         }).then(result => {
             result.items = result.items.map(repo => Object.assign(new RepositoryDetails(), repo));
             return result;

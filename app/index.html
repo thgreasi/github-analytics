@@ -1,14 +1,4 @@
 <!doctype html>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-
 <html lang="en">
 
 <head>
@@ -43,6 +33,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <!-- Tile icon for Win8 (144x144) -->
   <meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
 
+  <!-- uncomment only before publishig gh-pages, to force https -->
+  <script>'localhost'!==window.location.hostname&&'https:'!==window.location.protocol&&(window.location.protocol='https')</script>
+
   <!-- build:css styles/main.css -->
   <link rel="stylesheet" href="styles/main.css">
   <!-- endbuild-->
@@ -65,11 +58,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <!-- endbuild -->
 
   <template is="dom-bind" id="app">
-    <polymer-localforage id="dataReposStorage"
+    <iron-meta key="GithubService" value="[[ GithubService ]]"></iron-meta>
+    <iron-meta key="NpmService" value="[[ NpmService ]]"></iron-meta>
+    <iron-meta key="localforage" value="[[ localforage ]]"></iron-meta>
+    <iron-meta key="dataItemsLoaded" value="[[ dataItemsLoaded ]]"></iron-meta>
+    <!-- <polymer-localforage id="dataReposStorage"
                          name="data.repos"
                          value="{{repos}}"
                          auto-save-disabled
-                         use-raw></polymer-localforage>
+                         use-raw></polymer-localforage> -->
 
     <paper-drawer-panel id="paperDrawerPanel">
       <!-- Drawer Scroll Header Panel -->
@@ -89,7 +86,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
           <a data-route="repositories" href="{{baseUrl}}repositories">
             <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
-            <span>Repos</span>
+            <span>Starred Repos</span>
           </a>
 
           <a data-route="show-repos" href="{{baseUrl}}repos">
@@ -188,28 +185,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </paper-toast>
 
     <!-- Uncomment next block to enable Service Worker support (1/2) -->
-    <!--
+    
     <paper-toast id="caching-complete"
-                 duration="6000"
+                 duration="0"
                  text="Caching complete! This app will work offline.">
+                 <paper-button onclick="window['caching-complete'].toggle()" class="yellow-button">OK!</paper-button>
+    </paper-toast>
+
+    <paper-toast id="caching-updated"
+                 duration="0"
+                 text="A newer version of the app is available.">
+                 <paper-button onclick="location.reload()" class="yellow-button">Reload Now</paper-button>
+                 <paper-button onclick="window['caching-updated'].toggle()" class="yellow-button">Later</paper-button>
     </paper-toast>
 
     <platinum-sw-register auto-register
                           clients-claim
                           skip-waiting
                           base-uri="bower_components/platinum-sw/bootstrap"
-                          on-service-worker-installed="displayInstalledToast">
+                          on-service-worker-installed="displayInstalledToast"
+                          on-service-worker-updated="displayUpdatedToast">
       <platinum-sw-cache default-cache-strategy="fastest"
                          cache-config-file="cache-config.json">
       </platinum-sw-cache>
     </platinum-sw-register>
-    -->
+    
 
   </template>
 
-  <script src="bower_components/jQuery/dist/jquery.min.js"></script>
   <script src="bower_components/localforage/dist/localforage.min.js"></script>
-  <script src="node_modules/@reactivex/rxjs/dist/global/Rx.umd.min.js"></script>
+  <!-- <script src="node_modules/@reactivex/rxjs/dist/global/Rx.umd.min.js"></script> -->
 
   <!-- build:js scripts/app.js -->
   <script src="scripts/app.js"></script>

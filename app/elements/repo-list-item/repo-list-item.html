@@ -6,6 +6,16 @@
   <template>
     <style>
       :host {
+        display: block;
+        /*display: flex;
+        line-height: 1em;
+        flex-flow: row;
+        align-items: center;*/
+        transition: all ease 0.3s;
+        overflow: hidden;
+      }
+
+      .repoCont {
         display: flex;
         line-height: 1em;
         flex-flow: row;
@@ -50,6 +60,12 @@
         color: var(--paper-yellow-700);
       }
 
+      paper-icon-button {
+        padding: 0;
+        width: 24px;
+        height: 24px;
+      }
+
       [icon="file-download"] {
         color: var(--paper-blue-a700);
       }
@@ -69,52 +85,59 @@
         font-weight: bold;
       }
 
+      .yellow-button {
+        color: var(--paper-yellow-700);
+      }
+
     </style>
 
-    <div class="reponame-cont">
-      <template is="dom-if" if="{{!item.fork}}">
-        <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
-      </template>
+    <iron-collapse id="collapse" opened>
+      <div id="repoCont" class="repoCont">
 
-      <template is="dom-if" if="{{item.fork}}">
-        <iron-icon icon="app-svg-icons:repo-forked-icon"></iron-icon>
-      </template>
+        <div class="reponame-cont">
+          <iron-icon icon="[[itemIcon]]"></iron-icon>
 
-      <span class="repo-name">{{ item.name }}</span>
-    </div>
+          <span class="repo-name">{{ item.name }}</span>
+        </div>
 
-    <div class="stats-cont">
-      <div class="stargazers-cont">
-        <span class="diff">
-          <template is="dom-if" if="{{ stargazersDiff }}">
-            <span class$="{{ getDiffClass(stargazersDiff) }}">
-              <template is="dom-if" if="{{ isPositive(stargazersDiff) }}">+</template>
-              {{ normalizeNumberLength(stargazersDiff) }}
+        <div class="stats-cont">
+          <div class="stargazers-cont">
+            <span class="diff">
+              <template is="dom-if" if="{{ stargazersDiff }}">
+                <span class$="{{ getDiffClass(stargazersDiff) }}">
+                  <template is="dom-if" if="{{ isPositive(stargazersDiff) }}">+</template>
+                  {{ normalizeNumberLength(stargazersDiff) }}
+                </span>
+              </template>
             </span>
-          </template>
-        </span>
 
-        <span>{{ normalizeNumberLength(item.stargazers_count) }}</span>
-        <iron-icon icon="star"></iron-icon>
-      </div>
+            <span>{{ normalizeNumberLength(item.stargazers_count) }}</span>
+            <paper-icon-button class="bookmark-checkbox" icon="star" on-tap="unstarRepoTap"></paper-icon-button>
+          </div>
 
-      <div class="downloads-cont">
-        <template is="dom-if" if="{{ item.downloads }}">
+          <div class="downloads-cont">
+            <template is="dom-if" if="{{ item.downloads }}">
 
-          <span class="diff">
-            <template is="dom-if" if="{{ downloadsDiff }}">
-              <span class$="{{ getDiffClass(downloadsDiff) }}">
-                <template is="dom-if" if="{{ isPositive(downloadsDiff) }}">+</template>
-                {{ normalizeNumberLength(downloadsDiff) }}
+              <span class="diff">
+                <template is="dom-if" if="{{ downloadsDiff }}">
+                  <span class$="{{ getDiffClass(downloadsDiff) }}">
+                    <template is="dom-if" if="{{ isPositive(downloadsDiff) }}">+</template>
+                    {{ normalizeNumberLength(downloadsDiff) }}
+                  </span>
+                </template>
               </span>
-            </template>
-          </span>
 
-          <span>{{ normalizeNumberLength(item.downloads) }}</span>
-          <iron-icon icon="file-download"></iron-icon>
-        </template>
+              <span>{{ normalizeNumberLength(item.downloads) }}</span>
+              <iron-icon icon="file-download"></iron-icon>
+            </template>
+          </div>
+        </div>
       </div>
-    </div>
+    </iron-collapse>
+
+    <paper-toast id="unstarToast" duration="3000" text="Repository deleted!">
+      <paper-button on-tap="undoUnstar" class="yellow-button">Undo</paper-button>
+    </paper-toast>
   </template>
 
   <script>
@@ -125,6 +148,10 @@
         is: 'repo-list-item',
 
         properties: {
+          items: {
+            type: Array,
+            notify: true
+          },
           item: {
             type: Object,
             notify: true,
@@ -138,6 +165,11 @@
           downloadsDiff: {
             type: Number,
             readOnly: true
+          },
+          itemIcon: {
+            type: String,
+            notify: true,
+            computed: '_computeItemIcon(item)'
           }
         },
 
@@ -169,6 +201,35 @@
 
               this.notifyPath('item.downloads', dls.downloads);
             });
+          }
+        },
+
+        _computeItemIcon: function(item) {
+          if (item && item.fork) {
+            var weatherIconID = item.weather[0].id;
+            return 'app-svg-icons:repo-forked-icon';
+          }
+          return 'app-svg-icons:repo-icon';
+        },
+
+        unstarRepoTap: function () {
+          this.$.unstarToast.show();
+          this.$.collapse.hide();
+          this.$.unstarToast.undoTimeout = setTimeout(() => {
+            this.$.unstarToast.undoTimeout = null;
+            this.fire('unstar', { item: this.item });
+          }, this.$.unstarToast.duration);
+        },
+
+        undoUnstar: function () {
+          if (this.$.unstarToast.undoTimeout) {
+            clearTimeout(this.$.unstarToast.undoTimeout);
+            this.$.unstarToast.hide();
+            this.$.unstarToast.undoTimeout = null;
+
+            setTimeout(() => {
+              this.$.collapse.show();
+            }, 500);
           }
         },
 

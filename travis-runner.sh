@@ -11,9 +11,9 @@ then
   sed -i.tmp1 "s/This is another card./This is another card. PSK Deployed on: $date_value/" app/index.html
 
   deploy_ghpages () {
-    # Deploying to GitHub Pages! (http://polymerelements.github.io/polymer-starter-kit)
+    # Deploying to GitHub Pages! (http://thgreasi.github.io/github-analytics)
     echo Deploying to GitHub Pages
-    sed -i.tmp "s/\/\/ app.baseUrl = '\/polymer-starter-kit/app.baseUrl = '\/polymer-starter-kit/" app/scripts/app.js
+    sed -i.tmp "s/\/\/ app.baseUrl = '\/github-analytics/app.baseUrl = '\/github-analytics/" app/scripts/app.js
     sed -i.tmp2 "s/<\/head>/\  \<script>'https:'!==window.location.protocol\&\&(window.location.protocol='https')<\/script>&/g" app/index.html
     gulp build-deploy-gh-pages
     # Undoing Changes to PSK for GitHub Pages
@@ -24,7 +24,7 @@ then
   }
 
   deploy_firebase () {
-    # Deploying to Firebase! (https://polymer-starter-kit.firebaseapp.com)
+    # Deploying to Firebase! (https://github-analytics.firebaseapp.com)
     echo Deploying to Firebase
     # Making Changes to PSK for Firebase
     sed -i.tmp 's/<!-- Chrome for Android theme color -->/<base href="\/">\'$'\n<!-- Chrome for Android theme color -->/g' app/index.html

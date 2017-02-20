@@ -1,21 +1,24 @@
 import localforage from 'localforage';
-import Rx from 'Rx';
+// import Rx from 'Rx';
 
 import { app, loadedPromise } from './appCore';
 import { init as appThemeInit } from './appTheme';
 
 import { GithubService } from './Services/GithubServiceMock';
-// For debug only
 import { NpmService } from './Services/NpmServiceMock';
 import RepositoryDetails from './Model/RepositoryDetails';
 
 
 appThemeInit();
 
-// For debug only
+// localforage.config({
+//   name: 'githubAnalytics'
+// });
+
 app.GithubService = GithubService;
 app.NpmService = NpmService;
 app.RepositoryDetails = RepositoryDetails;
+app.localforage = localforage;
 
 app.repos = [];
 
@@ -24,6 +27,13 @@ app.displayInstalledToast = function() {
   // Check to make sure caching is actually enabled—it won't be in the dev environment.
   if (!Polymer.dom(document).querySelector('platinum-sw-cache').disabled) {
     Polymer.dom(document).querySelector('#caching-complete').show();
+  }
+};
+
+app.displayUpdatedToast = function() {
+  // Check to make sure caching is actually enabled—it won't be in the dev environment.
+  if (!Polymer.dom(document).querySelector('platinum-sw-cache').disabled) {
+    Polymer.dom(document).querySelector('#caching-updated').show();
   }
 };
 
@@ -42,6 +52,7 @@ app.reloadPage = function() {
   }
 };
 
+app.dataItemsLoaded = false;
 var reposOnLoadPromise = localforage.getItem('data.repos').then(repos => {
     if (!Array.isArray(repos)) {
       repos = [];
@@ -51,18 +62,21 @@ var reposOnLoadPromise = localforage.getItem('data.repos').then(repos => {
 
     console.log('LOADED!', repos);
     return repos;
-}).catch(() => {});
+}).catch(() => []);
 
 loadedPromise.then(() => {
   console.log('loadedPromise');
-  return  reposOnLoadPromise.then(repos => {
-    app.$.dataReposStorage.set('autoSaveDisabled', false);
+  return reposOnLoadPromise.then(repos => {
+    // app.$.dataReposStorage.set('autoSaveDisabled', false);
+    app.set('dataItemsLoaded', true);
     app.set('repos', repos);
     console.log('SET repos', repos);
 
-    if (repos.length) {
-      app.route = 'repositories';
-      setTimeout(() => app.reloadPage(), 0);
+    if (repos && repos.length) {
+      setTimeout(() => {
+        app.page.show('/repositories');
+        app.reloadPage();
+      }, 0);
     }
   });
 

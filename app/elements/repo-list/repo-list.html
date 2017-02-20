@@ -23,14 +23,15 @@
         border-left: 3px solid #61de61;
         /*margin: 0.5em 0;*/
         padding-left: 0.7em;
+        padding-right: 0.3em;
       }
 
     </style>
 
     <ul>
-      <template is="dom-repeat" items="{{items}}"  sort="_sortItems">
+      <template is="dom-repeat" items="{{items}}" sort="_sortItems">
         <li>
-          <repo-list-item item={{item}}></repo-list-item>
+          <repo-list-item item={{item}} items={{items}} on-unstar="unstarItem"></repo-list-item>
         </li>
       </template>
     </ul>
@@ -59,7 +60,7 @@
         },
 
         observers: [
-            '_itemsOrSortingChanged(items, sort)'
+          '_itemsOrSortingChanged(items, sort)'
         ],
 
         refresh: function() {
@@ -140,16 +141,17 @@
           this.set('sortedItems', sortedItems);
         },
 
+        unstarItem: function (sender, details) {
+          if (this.items && details && details.item) {
+              var index = this.items.indexOf(details.item);
+              if (index >= 0) {
+                this.splice('items', index, 1);
+              }
+            }
+        },
+
         ready: function() {
 
-          // this.items = [
-          //   'Responsive Web App boilerplate',
-          //   'Iron Elements and Paper Elements',
-          //   'End-to-end Build Tooling (including Vulcanize)',
-          //   'Unit testing with Web Component Tester',
-          //   'Routing with Page.js',
-          //   'Offline support with the Platinum Service Worker Elements'
-          // ];
         }
       });
     })();

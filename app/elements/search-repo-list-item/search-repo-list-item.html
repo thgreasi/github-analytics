@@ -151,8 +151,10 @@
         toggleSaveUserRepo: function() {
           if (this.savedItems) {
             if (this.isSaved) {
+              // this.splice('savedItems', this.savedItems.indexOf(this.savedItem), 1);
               this.savedItems.splice(this.savedItems.indexOf(this.savedItem), 1);
             } else {
+              // this.push('savedItems', this.item);
               this.savedItems.push(this.item);
             }
             this.set('savedItems', this.savedItems.slice());
