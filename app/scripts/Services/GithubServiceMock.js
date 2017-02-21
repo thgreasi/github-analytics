@@ -1,5 +1,3 @@
-import Rx from 'Rx';
-
 import RepositoryDetails from '../Model/RepositoryDetails';
 
 import { mockUserData } from './MockData/GithubServiceMockUserData';

@@ -1,5 +1,3 @@
-import Rx from 'Rx';
-
 export class NpmService {
     static getDownloadCountsLastMonth (packageName) {
         return fetch(`https://api.npmjs.org/downloads/point/last-month/${packageName}`).then(function (response) {
