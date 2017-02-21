@@ -85,8 +85,9 @@
           </a>
 
           <a data-route="repositories" href="{{baseUrl}}repositories">
-            <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
-            <span>Starred Repos</span>
+            <!-- <iron-icon icon="app-svg-icons:repo-icon"></iron-icon> -->
+            <iron-icon icon="star"></iron-icon>
+            <span>Starred</span>
           </a>
 
           <!-- <a data-route="show-repos" href="{{baseUrl}}repos">
@@ -134,12 +135,12 @@
           <iron-pages attr-for-selected="data-route" selected="{{route}}">
             <section data-route="home" tabindex="-1">
               <h1 class="page-title" tabindex="-1">Search</h1>
-              <user-search-page search-provider="{{ GithubService }}" saved-repos="{{ repos }}"></user-search-page>
+              <search-github-page search-provider="{{ GithubService }}" saved-repos="{{ repos }}"></search-github-page>
             </section>
 
             <section data-route="repositories" tabindex="-1">
               <h1 class="page-title" tabindex="-1">Repositories</h1>
-              <repositories-page page-element repos="{{ repos }}"></repositories-page>
+              <starred-items-page page-element repos="{{ repos }}"></starred-items-page>
               
               <!-- <paper-icon-button icon="sort"></paper-icon-button>
               <iron-dropdown horizontal-align="right" vertical-align="top">
