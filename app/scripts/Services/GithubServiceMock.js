@@ -9,16 +9,27 @@ import { mockRepoSearchData } from './MockData/GithubServiceMockRepoSearchData';
 export class GithubService {
 
     static getUserInfo (username) {
-        return Promise.resolve(mockUserData[username]);
+        return new Promise(function(resolve) {
+            setTimeout(() => {
+                resolve(mockUserData[username]);
+            }, 1000 + Math.random() * 250);
+        });
     }
 
     static getUserOrgs (username) {
-        return Promise.resolve(mockUserOrgsData[username] || []);
+        return new Promise(function(resolve) {
+            setTimeout(() => {
+                resolve(mockUserOrgsData[username] || []);
+            }, 1000 + Math.random() * 250);
+        });
     }
 
     static getUserRepos (username) {
-        return Promise.resolve((mockRepoData[username] || [])
-            .map(repo => Object.assign(new RepositoryDetails(), repo)));
+        return new Promise(function(resolve) {
+            setTimeout(() => {
+                resolve((mockRepoData[username] || []).map(repo => Object.assign(new RepositoryDetails(), repo)));
+            }, 1000 + Math.random() * 250);
+        });
     }
 
     static getRepoDetails (username, reponame) {
@@ -41,7 +52,7 @@ export class GithubService {
             if (match) {
                 setTimeout(() => {
                     resolve(match);
-                }, 1000 + Math.random() * 2);
+                }, 1000 + Math.random() * 500);
             } else {
                 let match = mockUserSearchData.thgre;
                 if (username && match) {
@@ -51,7 +62,7 @@ export class GithubService {
                     });
                     setTimeout(() => {
                         resolve(result);
-                    }, 1000 + Math.random() * 1);
+                    }, 1000 + Math.random() * 250);
                 } else {
                     resolve({});
                 }
@@ -65,7 +76,7 @@ export class GithubService {
             if (match) {
                 setTimeout(() => {
                     resolve(match);
-                }, 1000 + Math.random() * 2);
+                }, 1000 + Math.random() * 500);
             } else {
                 let match = mockRepoSearchData.localfora;
                 if (reponame && match) {
@@ -75,7 +86,7 @@ export class GithubService {
                     }).map(repo => Object.assign(new RepositoryDetails(), repo));
                     setTimeout(() => {
                         resolve(result);
-                    }, 1000 + Math.random() * 1);
+                    }, 1000 + Math.random() * 250);
                 } else {
                     resolve({});
                 }
