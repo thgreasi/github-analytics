@@ -19,11 +19,6 @@
         margin: 0;
       }
 
-      header {
-        color: #6F6F6F;
-        margin-bottom: 0;
-      }
-
       paper-spinner {
         vertical-align: middle;
       }
@@ -33,30 +28,57 @@
         top: 20px;
       }
 
-      .text-right {
+      .page-title {
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      footer {
+        @apply(--paper-font-caption);
         text-align: right;
+        color: var(--secondary-text-color);
       }
     </style>
 
-    <section class="text-right">
-      <paper-icon-button icon="sort" on-tap="openSortingDropDown"></paper-icon-button>
+    <header class="flex-item-with-addons">
+      <section>
+        <h1 class="page-title" tabindex="-1">Repositories</h1>
+        <template is="dom-if" if="{{ activePromise }}">
+          <paper-spinner active></paper-spinner>
+        </template>
+      </section>
 
-      <iron-dropdown horizontal-align="right" vertical-align="top" opened={{sortingDropDownOpened}}>
-        <paper-material class="dropdown-content no-padding" elevation="1">
-          <paper-listbox attr-for-selected="value"
-              selected="{{ sortingType }}"
-              on-iron-select="sortingOptionSelected">
-            <template is="dom-repeat" items="[[sortingOptions]]">
-              <paper-item value="[[item.value]]">[[item.name]]</paper-item>
-            </template>
-          </paper-listbox>
-        </paper-material>
-      </iron-dropdown>
-    </section>
+      <section>
+        <paper-icon-button icon="sort" on-tap="openSortingDropDown"></paper-icon-button>
+
+        <iron-dropdown horizontal-align="right" vertical-align="top" opened={{sortingDropDownOpened}}>
+          <paper-material class="dropdown-content no-padding" elevation="1">
+            <paper-listbox attr-for-selected="value"
+                selected="{{ sortingType }}"
+                on-iron-select="sortingOptionSelected">
+              <template is="dom-repeat" items="[[sortingOptions]]">
+                <paper-item value="[[item.value]]">[[item.name]]</paper-item>
+              </template>
+            </paper-listbox>
+          </paper-material>
+        </iron-dropdown>
+      </section>
+    </header>
+
+    <template is="dom-if" if="{{!repos.length}}">
+      <h5>Nothing bookmarked yet...</h5>
+    </template>
     
     <paper-material class="no-padding" elevation="1">
       <repo-list items="{{ repos }}" sort="{{ sortingType }}"></repo-list>
     </paper-material>
+
+    <template is="dom-if" if="{{updateDate}}">
+      <footer class="paper-material-sizer">
+        Last updated at
+        <time datetime="{{ updateDateISO }}">{{ updateDateLocal }}</time>
+      </footer>
+    </template>
   </template>
 
   <script>
@@ -70,6 +92,30 @@
           repos: {
             type: Array,
             notify: true,
+          },
+          activePromise: {
+            type: Object,
+            default: f => {
+              return null;
+            },
+            notify: true,
+            readOnly: true
+          },
+          updateDate: {
+            type: Date,
+            default: () => null,
+            notify: true,
+            readOnly: true
+          },
+          updateDateLocal: {
+            type: String,
+            notify: true,
+            computed: '_computeUpdateDateLocal(updateDate)'
+          },
+          updateDateISO: {
+            type: String,
+            notify: true,
+            computed: '_computeUpdateDateISO(updateDate)'
           },
           sortingOptions: {
             type: Array,
@@ -93,18 +139,25 @@
         },
 
         observers: [
-          '_reposChanged(repos.*)'
+          '_itemsChanged(repos.*)'
         ],
 
         // _debounced_reposChanged: function(changeRecord) {
-        //   this.debounce('_reposChanged', () => {
-        //    this._reposChanged.apply(this, arguments);
+        //   this.debounce('_itemsChanged', () => {
+        //    this._itemsChanged.apply(this, arguments);
         //   }, 200);
         // },
 
-        _reposChanged(changeRecord) {
-          console.log('_reposChanged', changeRecord);
-          var localforage = document.createElement('iron-meta').byKey('localforage');
+        _itemsChanged(changeRecord) {
+          console.log('_itemsChanged', changeRecord);
+          var ironMeta = document.createElement('iron-meta');
+          var dataItemsLoaded = ironMeta.byKey('dataItemsLoaded');
+          if (!dataItemsLoaded) {
+            // do not save anything until the old data are loaded
+            console.log('_itemsChanged save skipped');
+            return;
+          }
+          var localforage = ironMeta.byKey('localforage');
           localforage.setItem('data.repos', this.repos).then(() => {
             console.log('Saved', 'data.repos', this.repos);
           });
@@ -119,7 +172,7 @@
         },
 
         refresh: function() {
-          this.repos.map((repo) => {
+          var promise = Promise.all(this.repos.map((repo) => {
             return Promise.all([
               repo.updateDetails().then(() => '#${i}.stargazers_count'),
               repo.updateDownloads().then(() => '#${i}.downloads')
@@ -133,11 +186,49 @@
                 this.notifyPath(p, this.get(p));
               }
             }))).catch((e) => { console.error('Error:', e); });
+          }));
+
+          this._setActivePromise(promise);
+
+          promise.catch(() => {}).then(() => {
+            if (this.activePromise === promise) {
+              this._setActivePromise(null);
+            }
           });
+
+          promise.then(results => {
+            if ((results || []).filter(x => !!x).length) {
+              var d = new Date();
+              this._setUpdateDate(d);
+              var localforage = document.createElement('iron-meta').byKey('localforage');
+              localforage.setItem('data.repos.updateDate', d);
+            }
+          });
+
+          return promise;
+        },
+
+        _computeUpdateDateLocal: function(updateDate) {
+          if (!updateDate) {
+            return '';
+          }
+          return updateDate.toString();
+        },
+
+        _computeUpdateDateISO: function(updateDate) {
+          if (!updateDate) {
+            return '';
+          }
+          return updateDate.toISOString();
         },
 
         ready: function() {
-
+          var localforage = document.createElement('iron-meta').byKey('localforage');
+          localforage.getItem('data.repos.updateDate').then(d => {
+            if (d && !this.updateDate) {
+              this._setUpdateDate(d);
+            }
+          });
         }
       });
     })();

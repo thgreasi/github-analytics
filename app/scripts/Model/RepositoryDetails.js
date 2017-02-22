@@ -30,6 +30,10 @@ export default class RepositoryDetails {
 
     updateDetails () {
         return GithubService.getRepoDetails(this.owner.login, this.name).then(repo => {
+            if (!repo) {
+                return;
+            }
+
             this.setStargazers(repo.stargazers_count);
             Object.keys(repo).filter(k =>
                 typeof repo[k] !== 'function' &&
