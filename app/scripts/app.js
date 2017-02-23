@@ -4,8 +4,8 @@ import localforage from 'localforage';
 import { app, loadedPromise } from './appCore';
 import { init as appThemeInit } from './appTheme';
 
-import { GithubService } from './Services/GithubServiceMock';
-import { NpmService } from './Services/NpmServiceMock';
+import { GithubService } from './Services/GithubService';
+import { NpmService } from './Services/NpmService';
 import RepositoryDetails from './Model/RepositoryDetails';
 
 
