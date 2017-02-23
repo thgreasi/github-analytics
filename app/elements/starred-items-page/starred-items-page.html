@@ -121,7 +121,7 @@
             type: Array,
             notify: true,
             value: () => [
-              { name: 'No sort', value: 'none' },
+              // { name: 'No sort', value: 'none' },
               { name: 'By name', value: 'name' },
               { name: 'By stars', value: 'stargazers_count' },
               { name: 'By downloads', value: 'downloads' }
@@ -130,7 +130,7 @@
           sortingType: {
             type: String,
             notify: true,
-            value: () => 'none'
+            value: () => 'name'
           },
           sortingDropDownOpened: {
             type: Boolean,

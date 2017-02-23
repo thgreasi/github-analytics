@@ -29,7 +29,7 @@
     </style>
 
     <ul>
-      <template is="dom-repeat" items="{{items}}" sort="_sortItems">
+      <template is="dom-repeat" items="{{items}}" sort="{{_sortItems(sort)}}">
         <li>
           <repo-list-item item={{item}} items={{items}} on-unstar="unstarItem"></repo-list-item>
         </li>
@@ -100,8 +100,12 @@
           });
         },
 
-        _sortItems: function(a,b) {
-          if (!this.sort || !(this.sort in this.items[0])) {
+        _sortItems: function() {
+          return this._sortItemsComparator.bind(this);
+        },
+
+        _sortItemsComparator: function(a,b) {
+          if (!this.sort || this.sort === 'none') {
             return 0;
           }
           
