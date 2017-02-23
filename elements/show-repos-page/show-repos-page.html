@@ -1,0 +1,40 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+</head><body><dom-module id="show-repos-page">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      span {
+        @apply(--paper-font-body1);
+      }
+
+      ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+      }
+
+      li {
+        border: 1px solid rgba(0, 0, 0, 0.14);
+        border-left: 3px solid #61de61;
+        /*margin: 0.5em 0;*/
+        padding-left: 0.7em;
+      }
+
+    </style>
+
+    <ul>
+      <template is="dom-repeat" items="{{repoFullDetails}}">
+        <li>
+          <repo-list-item item="{{item}}"></repo-list-item>
+        </li>
+      </template>
+    </ul>
+  </template>
+
+  </dom-module>
+<script src="show-repos-page.js"></script></body></html>

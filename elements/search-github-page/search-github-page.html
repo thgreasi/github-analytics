@@ -1,0 +1,53 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+</head><body><dom-module id="search-github-page">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+
+      span,
+      input {
+        @apply(--paper-font-body2);
+      }
+
+      ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+      }
+
+      header {
+        color: #6F6F6F;
+        margin-bottom: 0;
+      }
+
+      paper-spinner {
+        vertical-align: middle;
+      }
+
+    </style>
+
+    <polymer-localforage id="lastSearchTermStorage" name="search.searchTerms.last" value="{{searchTerm}}" use-raw=""></polymer-localforage>
+
+    <paper-material elevation="1">
+      <!-- <label for="user-input">Search by user or organization:</label>
+      <div>
+        <input id="user-input" value="{{searchTerm::input}}" placeholder="3 characters min">
+      </div> -->
+
+      <form is="iron-form" id="searchForm">
+        <paper-input id="searchInput" bind-value="{{searchTermTmp}}" label="Search by user or organization">
+          <paper-icon-button suffix="" on-tap="setSearchTerm" icon="search" alt="search" title="search">
+          </paper-icon-button>
+        </paper-input>
+      </form>
+    </paper-material>
+    
+    <github-search search-term="{{ searchTerm }}" search-provider="{{ searchProvider }}" saved-repos="{{ savedRepos }}"></github-search>
+  </template>
+
+  </dom-module>
+<script src="search-github-page.js"></script></body></html>

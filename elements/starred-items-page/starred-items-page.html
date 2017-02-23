@@ -1,0 +1,83 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+</head><body><dom-module id="starred-items-page">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+
+      span,
+      input {
+        @apply(--paper-font-body2);
+      }
+
+      ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+      }
+
+      paper-spinner {
+        vertical-align: middle;
+      }
+
+      /* page styles */
+      .dropdown-content {
+        top: 20px;
+      }
+
+      .page-title {
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      footer {
+        @apply(--paper-font-caption);
+        text-align: right;
+        color: var(--secondary-text-color);
+      }
+    </style>
+
+    <header class="flex-item-with-addons">
+      <section>
+        <h1 class="page-title" tabindex="-1">Repositories</h1>
+        <template is="dom-if" if="{{ activePromise }}">
+          <paper-spinner active=""></paper-spinner>
+        </template>
+      </section>
+
+      <section>
+        <paper-icon-button icon="sort" on-tap="openSortingDropDown"></paper-icon-button>
+
+        <iron-dropdown horizontal-align="right" vertical-align="top" opened="{{sortingDropDownOpened}}">
+          <paper-material class="dropdown-content no-padding" elevation="1">
+            <paper-listbox attr-for-selected="value" selected="{{ sortingType }}" on-iron-select="sortingOptionSelected">
+              <template is="dom-repeat" items="[[sortingOptions]]">
+                <paper-item value="[[item.value]]">[[item.name]]</paper-item>
+              </template>
+            </paper-listbox>
+          </paper-material>
+        </iron-dropdown>
+      </section>
+    </header>
+
+    <template is="dom-if" if="{{!repos.length}}">
+      <h5>Nothing bookmarked yet...</h5>
+    </template>
+    
+    <paper-material class="no-padding" elevation="1">
+      <repo-list items="{{ repos }}" sort="{{ sortingType }}"></repo-list>
+    </paper-material>
+
+    <template is="dom-if" if="{{updateDate}}">
+      <footer class="paper-material-sizer">
+        Last updated at
+        <time datetime="{{ updateDateISO }}">{{ updateDateLocal }}</time>
+      </footer>
+    </template>
+  </template>
+
+  </dom-module>
+<script src="starred-items-page.js"></script></body></html>

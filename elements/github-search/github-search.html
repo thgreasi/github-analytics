@@ -1,0 +1,144 @@
+<html><head><link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+
+</head><body><dom-module id="github-search">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+
+      span,
+      input {
+        @apply(--paper-font-body2);
+      }
+
+      header {
+        color: #6F6F6F;
+        margin-bottom: 0;
+      }
+
+      paper-spinner {
+        vertical-align: middle;
+      }
+
+      .user-name-li {
+        @apply(--paper-font-body1);
+        position: relative;
+        padding: 8px 0;
+        cursor: pointer;
+      }
+
+      .user-name {
+        font-size: 1.5em;
+        font-weight: normal;
+      }
+
+    </style>
+    
+    <section>
+      <template is="dom-if" if="{{activeUserPromise}}">
+        <header>
+          Users
+          <paper-spinner active=""></paper-spinner>
+        </header>
+      </template>
+
+      <template is="dom-if" if="{{userInfos.length}}">
+        <header>Users</header>
+        <paper-material class="no-padding" elevation="1">
+          <ul class="unstyled">
+            <template is="dom-repeat" items="{{userInfos}}">
+              <li class="paper-list-item user-name-li" on-tap="openUserInfoDialog">
+                <iron-icon icon="app-svg-icons:github-icon"></iron-icon>
+                <span class="user-name">{{item.login}}</span>
+                <paper-ripple></paper-ripple>
+              </li>
+            </template>
+          </ul>
+        </paper-material>
+      </template>
+    </section>
+
+    <section class="search-results-repos">
+      <template is="dom-if" if="{{activeRepoPromise}}">
+        <header>
+          Repos
+          <paper-spinner active=""></paper-spinner>
+        </header>
+      </template>
+
+      <template is="dom-if" if="{{repoInfos.length}}">
+        <header class="flex-item-with-addons">
+          <span class="flex-main-item">Repos</span>
+
+          <paper-button class="flex-item-addon" on-tap="toggleRepoListItemsSelection" data-target-container=".search-results-repos" data-target-type="!fork">
+            <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
+            <iron-icon icon="icons:star-half"></iron-icon>
+          </paper-button>
+
+          <paper-button class="flex-item-addon" on-tap="toggleRepoListItemsSelection" data-target-container=".search-results-repos" data-target-type="fork">
+            <iron-icon icon="app-svg-icons:repo-forked-icon"></iron-icon>
+            <iron-icon icon="icons:star-half"></iron-icon>
+          </paper-button>
+        </header>
+        <paper-material class="no-padding" elevation="1">
+          <ul class="unstyled">
+            <template is="dom-repeat" items="{{repoInfos}}">
+              <li class="paper-list-item">
+                <search-repo-list-item item="{{item}}" saved-items="{{ savedRepos }}"></search-repo-list-item>
+              </li>
+            </template>
+          </ul>
+        </paper-material>
+      </template>
+    </section>
+
+
+    <paper-dialog id="userInfoDialog">
+      <header class="flex-item-with-addons">
+        <h2 class="flex-main-item">Repos</h2>
+
+        <paper-button class="flex-item-addon" on-tap="toggleRepoListItemsSelection" data-target-container="#userInfoDialog" data-target-type="!fork">
+          <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
+          <iron-icon icon="icons:star-half"></iron-icon>
+        </paper-button>
+
+        <paper-button class="flex-item-addon" on-tap="toggleRepoListItemsSelection" data-target-container="#userInfoDialog" data-target-type="fork">
+          <iron-icon icon="app-svg-icons:repo-forked-icon"></iron-icon>
+          <iron-icon icon="icons:star-half"></iron-icon>
+        </paper-button>
+      </header>
+      <paper-dialog-scrollable>
+
+        <template is="dom-if" if="{{selectedUserReposPromise}}">
+          <paper-spinner active=""></paper-spinner>
+        </template>
+
+        <template is="dom-if" if="{{selectedUserRepos.length}}">
+          <ul class="unstyled">
+            <template is="dom-repeat" items="{{selectedUserRepos}}">
+              <li class="paper-list-item">
+                <search-repo-list-item item="{{item}}" saved-items="{{ savedRepos }}"></search-repo-list-item>
+              </li>
+            </template>
+          </ul>
+        </template>
+
+        <template is="dom-if" if="{{!selectedUserReposPromise}}">
+          <template is="dom-if" if="{{!selectedUserRepos.length}}">
+            No repositories found!
+          </template>
+        </template>
+        
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss="">Cancel</paper-button>
+        <paper-button dialog-confirm="" autofocus="" on-tap="userInfoDialogOK">OK</paper-button>
+      </div>
+    </paper-dialog>
+
+  </template>
+
+  </dom-module>
+<script src="github-search.js"></script></body></html>

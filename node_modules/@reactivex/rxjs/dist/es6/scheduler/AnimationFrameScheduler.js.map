@@ -1,0 +1,1 @@
+{"version":3,"file":"AnimationFrameScheduler.js","sourceRoot":"","sources":["../src/scheduler/AnimationFrameScheduler.ts"],"names":[],"mappings":"OAEO,EAAC,cAAc,EAAC,MAAM,kBAAkB;OACxC,EAAC,oBAAoB,EAAC,MAAM,wBAAwB;AAE3D,6CAA6C,cAAc;IACzD,WAAW,CAAI,IAA6B,EAAE,KAAS;QACrD,MAAM,CAAC,IAAI,oBAAoB,CAAC,IAAI,EAAE,IAAI,CAAC,CAAC,QAAQ,CAAC,KAAK,CAAC,CAAC;IAC9D,CAAC;AACH,CAAC;AAAA"}

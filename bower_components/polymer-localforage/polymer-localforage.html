@@ -1,0 +1,156 @@
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<!--
+/**
+ * @module Polymer Elements
+ */
+/**
+ * Element access to Mozilla's localforage library.  The "name" property
+ * is the key to the data ("value" property) stored in localforage.
+ *
+ * polymer-localforage automatically saves the value to localforage when
+ * value is changed.  Note that if value is an object auto-save will be
+ * triggered only when value is a different instance.
+ *
+ * Example:
+ *
+ *     <polymer-localforage name="my-app-storage" value="{{value}}"></polymer-localforage>
+ *
+ * @class polymer-localforage
+ * @blurb Element access to localforage.
+ * @author The Polymer Authors
+ * @categories Data
+ *
+ */
+/**
+ * Fired after it is loaded from localforage.
+ * 
+ * @event polymer-localforage-load
+ */
+-->
+<link rel="import" href="../polymer/polymer.html">
+<script src="../localforage/dist/localforage.min.js"></script>
+
+<dom-module id="polymer-localforage">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+    </style>
+  </template>
+  <script>
+
+    Polymer({
+
+      'is': 'polymer-localforage',
+
+      'properties': {
+        /**
+         * The key to the data stored in localforage.
+         *
+         * @attribute name
+         * @type string
+         * @default null
+         */
+        name: {
+          type: String,
+          value: ''
+        },
+        /**
+         * The data associated with the specified name.
+         *
+         * @attribute value
+         * @type object
+         * @default null
+         */
+        value: {
+          type: Object,
+          value: null,
+          notify: true
+        },
+        /**
+         * If true, the value is stored and retrieved without JSON processing.
+         *
+         * @attribute useRaw
+         * @type boolean
+         * @default false
+         */
+        useRaw: {
+          type: Boolean,
+          value: false
+        },
+        /**
+         * If true, auto save is disabled.
+         *
+         * @attribute autoSaveDisabled
+         * @type boolean
+         * @default false
+         */
+        autoSaveDisabled: {
+          type: Boolean,
+          value: false
+        }
+      },
+
+      observers: [
+        'valueChanged(value)'
+      ],
+
+      valueChanged: function() {
+        console.log('SAVE!', this.name, this.loaded, this.autoSaveDisabled);
+        if (!this.autoSaveDisabled) {
+          this.save();
+        }
+      },
+
+      load: function() {
+        var self = this;
+        localforage.getItem(this.name)
+        .then(function(v) {
+          console.log('LOADED!', this.name, v);
+          if (self.useRaw) {
+            self.setAttribute('value', v);
+          } else {
+            // localforage has a flaw that makes it difficult to determine
+            // if a key actually exists or not (getItem returns null if the
+            // key doesn't exist, which is not distinguishable from a stored
+            // null value)
+            // however, if not `useRaw`, an (unparsed) null value unambiguously
+            // signals that there is no value in storage (a stored null value would
+            // be escaped, i.e. "null")
+            // in self case we save any non-null current (default) value
+            if (v === null) {
+              if (self.value !== null) {
+                self.save();
+              }
+            } else {
+              self.value = v;
+              self.dispatchEvent(new CustomEvent('value-changed'));
+            }
+          }
+          self.setAttribute('loaded', true);
+        });
+      },
+
+      /** 
+       * Saves the value to localforage.
+       *
+       * @method save
+       */
+      save: function() {
+        var v;
+        if(this.useRaw || (typeof(this.value) === 'string')) {
+          v = this.value;
+        } else {
+          v = JSON.stringify(this.value)
+        }
+        console.log('ACTUAL SAVE', this.name, this.name, this.value);
+        return localforage.setItem(this.name, v);
+      }
+    });
+  </script>
+</dom-module>

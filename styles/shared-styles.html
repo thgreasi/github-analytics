@@ -1,0 +1,152 @@
+<html><head><link rel="import" href="../bower_components/polymer/polymer.html"><link rel="import" href="../bower_components/paper-styles/typography.html"></head><body><dom-module id="shared-styles"><template><style>
+      .page-title {
+        @apply(--paper-font-display2);
+      }
+
+      .app-menu {
+        --paper-menu-selected-item: {
+          color: #fff;
+          background: var(--light-primary-color);
+        }
+      }
+
+      paper-menu a > *, paper-menu paper-item > *, paper-menu paper-icon-item > * {
+        pointer-events: none;
+      }
+
+      @media (max-width: 600px) {
+        .page-title {
+          font-size: 24px!important;
+        }
+      }
+
+      /******************
+       * my core styles *
+       ******************/
+
+      .block-level {
+        display: block;
+        width: 100%;
+      }
+
+      .no-padding {
+        padding: 0;
+      }
+
+      .no-margin {
+        margin: 0;
+      }
+
+      ul.unstyled {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+      }
+
+      .clearfix:before,
+      .clearfix:after {
+        content: "";
+        display: table;
+        clear: both;
+      }
+
+      .floatleft {
+        float: left;
+      }
+
+      .floatright: {
+        float: right;
+      }
+
+      .flex-item-with-addons {
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .flex-main-item {
+        flex: 1 0 auto;
+      }
+
+      .flex-item-addon {
+        flex: 0 0 auto;
+      }
+
+      /******************************
+       *       paper-material       *
+       ******************************/
+
+      paper-material {
+        @apply(--paper-font-body2);
+      }
+
+      paper-material .subhead {
+        @apply(--paper-font-subhead);
+      }
+
+      header + paper-material {
+        margin-top: 0;
+      }
+
+      paper-material {
+        border-radius: 2px;
+        height: 100%;
+        width: calc(98.66% - 16px);
+        padding: 16px 0 16px 0;
+        margin: 16px auto;
+        background: white;
+      }
+
+      paper-material.no-padding,
+      .paper-material-sizer {
+        width: calc(98.66% + 16px);
+        margin: 16px auto;
+      }
+
+      /* Breakpoints */
+
+      /* Small */
+      @media (max-width: 600px) {
+
+        paper-material {
+          --menu-container-display: none;
+          width: calc(97.33% - 32px);
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+        
+        paper-material.no-padding,
+        .paper-material-sizer {
+          width: 97.33%;
+        }
+
+      }
+
+      /* Tablet+ */
+      @media (min-width: 601px) {
+
+        paper-material {
+          width: calc(98% - 46px);
+          margin-bottom: 32px;
+          padding-left: 30px;
+          padding-right: 30px;
+        }
+        
+        paper-material.no-padding,
+        .paper-material-sizer {
+          width: calc(98% + 14px);
+        }
+
+      }
+
+      /******************************
+       * my element specific styles *
+       ******************************/
+
+      li.paper-list-item {
+        border: 1px solid rgba(0, 0, 0, 0.14);
+        padding-left: 0.7em;
+      }
+
+    </style></template></dom-module></body></html>

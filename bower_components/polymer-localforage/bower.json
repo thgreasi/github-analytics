@@ -1,0 +1,36 @@
+{
+  "name": "polymer-localforage",
+  "version": "1.0.0",
+  "homepage": "https://github.com/addyosmani/polymer-localforage",
+  "authors": [
+    "Addy Osmani <addyosmani@gmail.com>",
+    "Stefan Grönke <stefan@gronke.net>"
+  ],
+  "description": "A Polymer element for Mozilla's localForage (async storage via IndexedDB or WebSQL)",
+  "main": "polymer-localforage.html",
+  "keywords": [
+    "polymer",
+    "web-component",
+    "web-components",
+    "storage",
+    "async",
+    "localstorage"
+  ],
+  "license": "BSD-2",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.1.2",
+    "localforage": "*"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "test-fixture": "PolymerElements/test-fixture#^1.0.0",
+    "web-component-tester": "*",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  }
+}
