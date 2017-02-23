@@ -1,6 +1,3 @@
-import { GithubService } from '../Services/GithubServiceMock';
-import { NpmService } from '../Services/NpmServiceMock';
-
 export default class RepositoryDetails {
 
     constructor () {
@@ -29,6 +26,7 @@ export default class RepositoryDetails {
     }
 
     updateDetails () {
+        var GithubService = document.createElement('iron-meta').byKey('GithubService');
         return GithubService.getRepoDetails(this.owner.login, this.name).then(repo => {
             if (!repo) {
                 return;
@@ -94,6 +92,7 @@ export default class RepositoryDetails {
             return Promise.resolve(0);
         }
         this.downloads_lastRequestDate = new Date();
+        var NpmService = document.createElement('iron-meta').byKey('NpmService');
         return NpmService.getDownloadCountsLastMonth(this.name).then(dls => {
             this.setDownloads(dls.downloads);
             return dls;
