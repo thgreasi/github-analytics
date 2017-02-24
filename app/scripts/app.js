@@ -1,41 +1,16 @@
-import localforage from 'localforage';
-// import Rx from 'Rx';
-
 import { app, loadedPromise } from './appCore';
+import './appSW';
 import { init as appThemeInit } from './appTheme';
+import { GithubService } from './appConfig';
 
-import { GithubService } from './Services/GithubService';
-import { NpmService } from './Services/NpmService';
+import localforage from 'localforage';
 import RepositoryDetails from './Model/RepositoryDetails';
 
 
 appThemeInit();
 
-// localforage.config({
-//   name: 'githubAnalytics'
-// });
-
-app.GithubService = GithubService;
-app.NpmService = NpmService;
-app.RepositoryDetails = RepositoryDetails;
-app.localforage = localforage;
-
 app.repos = [];
 
-
-app.displayInstalledToast = function() {
-  // Check to make sure caching is actually enabled—it won't be in the dev environment.
-  if (!Polymer.dom(document).querySelector('platinum-sw-cache').disabled) {
-    Polymer.dom(document).querySelector('#caching-complete').show();
-  }
-};
-
-app.displayUpdatedToast = function() {
-  // Check to make sure caching is actually enabled—it won't be in the dev environment.
-  if (!Polymer.dom(document).querySelector('platinum-sw-cache').disabled) {
-    Polymer.dom(document).querySelector('#caching-updated').show();
-  }
-};
 
 // Scroll page to top and expand header
 app.scrollPageToTop = function() {
