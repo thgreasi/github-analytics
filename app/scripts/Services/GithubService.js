@@ -61,6 +61,19 @@ export class GithubService {
         });
     }
 
+    static getRepoDetailsByFullName (fullName) {
+        return fetch(BASE_URL + `repos/${fullName}`).then(function (response) {
+            return response.json();
+        }).then(repo => {
+            // the only extras are: network_count & subscribers_count
+            return Object.assign(new RepositoryDetails(), repo);
+        }).catch(function (err) {
+            console.log(err);
+            return err;
+        });
+    }
+
+
     // https://developer.github.com/v3/search/#search-users
     // file:///home/teo/Drive/Dev/githubAnalytics/research/docs/Search%20|%20GitHub%20Developer%20Guide.html#search-users
     static searchUser (username) {

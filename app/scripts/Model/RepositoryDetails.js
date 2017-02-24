@@ -27,7 +27,8 @@ export default class RepositoryDetails {
 
     updateDetails () {
         var GithubService = document.createElement('iron-meta').byKey('GithubService');
-        return GithubService.getRepoDetails(this.owner.login, this.name).then(repo => {
+        // return GithubService.getRepoDetails(this.owner.login, this.name).then(repo => {
+        return GithubService.getRepoDetailsByFullName(this.full_name).then(repo => {
             if (!repo) {
                 return;
             }
