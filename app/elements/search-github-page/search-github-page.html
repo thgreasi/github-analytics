@@ -116,10 +116,10 @@
           });
 
           var localforage = document.createElement('iron-meta').byKey('localforage');
-          localforage.getItem('search.searchTerms.last').then((term) => {
-            console.log(`getItem('search.searchTerms.last') => ${term}`);
-            this.set('searchTerm', term || '');
-            this.set('searchTermTmp', term || '');
+          localforage.getItem('search.searchTerms.last').then((lastValue) => {
+            console.log(`getItem('search.searchTerms.last') => ${lastValue}`);
+            this.set('searchTerm', lastValue || '');
+            this.set('searchTermTmp', lastValue || '');
             this.$.searchInput.value = this.searchTermTmp;
           });
         }
