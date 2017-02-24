@@ -130,7 +130,8 @@
           sortingType: {
             type: String,
             notify: true,
-            value: () => 'name'
+            value: () => 'name',
+            observer: '_sortingTypeChangedObserver',
           },
           sortingDropDownOpened: {
             type: Boolean,
@@ -169,6 +170,18 @@
 
         sortingOptionSelected: function () {
           this.set('sortingDropDownOpened', false);
+        },
+
+        _sortingTypeChangedObserver: function (newValue) {
+          if (!newValue) {
+            return;
+          }
+          var localforage = document.createElement('iron-meta').byKey('localforage');
+          localforage.setItem('starred-items.sortingType.last', newValue).then(() => {
+            console.log(`setItem('starred-items.sortingType.last', ${newValue}) Saved!`);
+          }).catch((e) => {
+            console.error(`setItem('starred-items.sortingType.last', ${newValue}) Error`, e);
+          });
         },
 
         refresh: function() {
@@ -227,6 +240,13 @@
           localforage.getItem('data.repos.updateDate').then(d => {
             if (d && !this.updateDate) {
               this._setUpdateDate(d);
+            }
+          });
+
+          localforage.getItem('starred-items.sortingType.last').then((lastValue) => {
+            console.log(`getItem('starred-items.sortingType.last') => ${lastValue}`);
+            if (lastValue && lastValue !== this.sortingType) {
+              this.set('sortingType', lastValue);
             }
           });
         }
