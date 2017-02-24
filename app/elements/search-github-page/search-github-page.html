@@ -30,17 +30,7 @@
 
     </style>
 
-    <polymer-localforage id="lastSearchTermStorage"
-                         name="search.searchTerms.last"
-                         value="{{searchTerm}}"
-                         use-raw></polymer-localforage>
-
     <paper-material elevation="1">
-      <!-- <label for="user-input">Search by user or organization:</label>
-      <div>
-        <input id="user-input" value="{{searchTerm::input}}" placeholder="3 characters min">
-      </div> -->
-
       <form is="iron-form" id="searchForm">
         <paper-input id="searchInput" bind-value="{{searchTermTmp}}"
                      label="Search by user or organization">
@@ -72,7 +62,8 @@
           searchTerm: {
             type: String,
             // value: 'Welcome!',
-            notify: true
+            notify: true,
+            observer: '_searchTermChangedObserver',
           },
 
           searchTermTmp: {
@@ -102,8 +93,16 @@
         _searchTermUnDebouncedChangedObserver: function (newValue) {
           this.debounce('searchTermChanged', () => {
             this.set('searchTerm', newValue);
-
           }, 1000);
+        },
+
+        _searchTermChangedObserver: function (newValue) {
+          var localforage = document.createElement('iron-meta').byKey('localforage');
+          localforage.setItem('search.searchTerms.last', newValue).then(() => {
+            console.log(`setItem('search.searchTerms.last', ${newValue}) Saved!`);
+          }).catch((e) => {
+            console.error(`setItem('search.searchTerms.last', ${newValue}) Error`, e);
+          });
         },
 
         setSearchTerm: function () {
@@ -116,17 +115,13 @@
             this.setSearchTerm();
           });
 
-          // we should use the promise returned by LF if the polymer package gets ever updated
-          var lastValueLoadedFn = () => {
-            if (this.searchTermTmp === undefined && this.searchTerm !== undefined) {
-              this.$.lastSearchTermStorage.removeEventListener('value-changed', lastValueLoadedFn);
-              this.set('searchTermTmp', this.searchTerm || '');
-              this.$.searchInput.value = this.searchTermTmp;
-            }
-          };
-          this.$.lastSearchTermStorage.addEventListener('value-changed', lastValueLoadedFn);
-
-          this.$.lastSearchTermStorage.load();
+          var localforage = document.createElement('iron-meta').byKey('localforage');
+          localforage.getItem('search.searchTerms.last').then((term) => {
+            console.log(`getItem('search.searchTerms.last') => ${term}`);
+            this.set('searchTerm', term || '');
+            this.set('searchTermTmp', term || '');
+            this.$.searchInput.value = this.searchTermTmp;
+          });
         }
       });
     })();
