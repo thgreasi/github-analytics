@@ -95,6 +95,10 @@ export class GithubService {
             var result = response.json();
             return result;
         }).then(result => {
+            if (!result.items) {
+                console.log(`search/repositories?q=${reponame} => `, result);
+                result.items = [];
+            }
             result.items = result.items.map(repo => Object.assign(new RepositoryDetails(), repo));
             return result;
         }).catch(function (err) {
