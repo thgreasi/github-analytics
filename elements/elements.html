@@ -25610,7 +25610,11 @@ window.addEventListener('WebComponentsReady', function () {
       }
 
       .flex-main-item {
-        flex: 1 0 auto;
+        flex: 1 1 auto;
+      }
+
+      .flex-noshrink {
+        flex-shrink: 0;
       }
 
       .flex-item-addon {
@@ -25766,6 +25770,7 @@ window.addEventListener('WebComponentsReady', function () {
       }
 
       .user-name {
+        margin: 5px;
         font-size: 1.5em;
         font-weight: normal;
       }
@@ -25785,9 +25790,9 @@ window.addEventListener('WebComponentsReady', function () {
         <paper-material class="no-padding" elevation="1">
           <ul class="unstyled">
             <template is="dom-repeat" items="{{userInfos}}">
-              <li class="paper-list-item user-name-li" on-tap="openUserInfoDialog">
-                <iron-icon icon="app-svg-icons:github-icon"></iron-icon>
-                <span class="user-name">{{item.login}}</span>
+              <li class="paper-list-item user-name-li flex-item-with-addons" on-tap="openUserInfoDialog">
+                <iron-icon class="user-icon flex-item-addon" icon="app-svg-icons:github-icon"></iron-icon>
+                <span class="user-name flex-main-item">{{item.login}}</span>
                 <paper-ripple></paper-ripple>
               </li>
             </template>
@@ -26101,7 +26106,7 @@ window.addEventListener('WebComponentsReady', function () {
   });
 })();</script><dom-module id="repo-list-item" assetpath="repo-list-item/">
   <template>
-    <style>
+    <style include="shared-styles">
       :host {
         display: block;
         /*display: flex;
@@ -26112,18 +26117,25 @@ window.addEventListener('WebComponentsReady', function () {
         overflow: hidden;
       }
 
-      .repoCont {
+      span {
+        @apply(--paper-font-body1);
+      }
+
+      .item-cont {
         display: flex;
         line-height: 1em;
         flex-flow: row;
         align-items: center;
       }
 
-      .reponame-cont {
-        flex: 1 0 0;
-        display: inline-block;
-        width: auto;
-        line-height: 3em;
+      .item-icon {
+        margin: 5px 0;
+      }
+
+      .item-name {
+        font-size: 1.5em;
+        vertical-align: middle;
+        margin: 5px;
       }
 
       .stats-cont {
@@ -26135,22 +26147,9 @@ window.addEventListener('WebComponentsReady', function () {
       .stargazers-cont,
       .downloads-cont {
         flex: 1;
-        display: inline-block;
-      }
-
-      span {
-        @apply(--paper-font-body1);
-      }
-
-      .repo-icon {
-        display: inline-block;
-        vertical-align: middle;
-        line-height: 0.5;
-      }
-
-      .repo-name {
-        font-size: 1.5em;
-        vertical-align: middle;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
       }
 
       [icon="star"] {
@@ -26189,16 +26188,14 @@ window.addEventListener('WebComponentsReady', function () {
     </style>
 
     <iron-collapse id="collapse" opened="">
-      <div id="repoCont" class="repoCont">
+      <div id="repoCont" class="item-cont flex-item-with-addons">
 
-        <div class="reponame-cont">
-          <iron-icon icon="[[itemIcon]]"></iron-icon>
+        <iron-icon class="item-icon flex-item-addon" icon="[[itemIcon]]"></iron-icon>
 
-          <span class="repo-name">{{ item.name }}</span>
-        </div>
+        <span class="item-name flex-main-item">{{ item.name }}</span>
 
-        <div class="stats-cont">
-          <div class="stargazers-cont">
+        <div class="stats-cont flex-item-addon">
+          <div class="stargazers-cont flex-item-addon">
             <span class="diff">
               <template is="dom-if" if="{{ stargazersDiff }}">
                 <span class$="{{ getDiffClass(stargazersDiff) }}">
@@ -26208,8 +26205,8 @@ window.addEventListener('WebComponentsReady', function () {
               </template>
             </span>
 
-            <span>{{ normalizeNumberLength(item.stargazers_count) }}</span>
-            <paper-icon-button class="bookmark-checkbox" icon="star" on-tap="unstarRepoTap"></paper-icon-button>
+            <span class="flex-item-addon">{{ normalizeNumberLength(item.stargazers_count) }}</span>
+            <paper-icon-button class="bookmark-checkbox flex-item-addon" icon="star" on-tap="unstarRepoTap"></paper-icon-button>
           </div>
 
           <div class="downloads-cont">
@@ -26670,7 +26667,7 @@ window.addEventListener('WebComponentsReady', function () {
   });
 })();</script><dom-module id="search-repo-list-item" assetpath="search-repo-list-item/">
   <template>
-    <style>
+    <style include="shared-styles">
       :host {
         display: flex;
         line-height: 1em;
@@ -26678,70 +26675,29 @@ window.addEventListener('WebComponentsReady', function () {
         align-items: center;
       }
 
-      .reponame-cont {
-        flex: 1 0 0;
-        display: inline-block;
-        width: auto;
-        line-height: 3em;
-      }
-
-      .stargazers-cont,
-      .downloads-cont {
-        flex: 1;
-        display: inline-block;
-      }
-
       span {
         @apply(--paper-font-body1);
       }
 
-      .repo-icon {
-        display: inline-block;
-        vertical-align: middle;
-        line-height: 0.5;
-      }
-
-      .repo-name {
+      .item-name {
         font-size: 1.5em;
         vertical-align: middle;
+        margin: 5px;
       }
 
       .bookmark-checkbox {
         color: var(--paper-yellow-700);
       }
 
-      .downloads-cont,
-      .stargazers-cont {
-        text-align: right;
-      }
-
-      .positive-diff {
-        color: #61de61;
-        font-weight: bold;
-      }
-
-      .negative-diff {
-        color: red;
-        font-weight: bold;
-      }
-
     </style>
 
-    <div class="reponame-cont">
-      <template is="dom-if" if="{{!item.fork}}">
-        <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
-      </template>
+    <iron-icon class="flex-item-addon" icon="[[itemIcon]]"></iron-icon>
 
-      <template is="dom-if" if="{{item.fork}}">
-        <iron-icon icon="app-svg-icons:repo-forked-icon"></iron-icon>
-      </template>
-
-      <span class="repo-name">{{item.full_name}}</span>
-    </div>
+    <span class="item-name flex-main-item">{{item.full_name}}</span>
 
     
     
-    <div on-tap="toggleSaveUserRepo">
+    <div class="flex-item-addon" on-tap="toggleSaveUserRepo">
       <template is="dom-if" if="{{!isSaved}}">
         <paper-icon-button class="bookmark-checkbox" icon="icons:star-border"></paper-icon-button>
       </template>
@@ -26796,6 +26752,11 @@ window.addEventListener('WebComponentsReady', function () {
       isSaved: {
         type: Boolean,
         readOnly: true
+      },
+      itemIcon: {
+        type: String,
+        notify: true,
+        computed: '_computeItemIcon(item)'
       }
     },
 
@@ -26826,6 +26787,14 @@ window.addEventListener('WebComponentsReady', function () {
         }
         this.set('savedItems', this.savedItems.slice());
       }
+    },
+
+    _computeItemIcon: function _computeItemIcon(item) {
+      if (item && item.fork) {
+        var weatherIconID = item.weather[0].id;
+        return 'app-svg-icons:repo-forked-icon';
+      }
+      return 'app-svg-icons:repo-icon';
     },
 
     ready: function ready() {}

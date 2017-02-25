@@ -4,7 +4,7 @@
 
 </head><body><dom-module id="search-repo-list-item">
   <template>
-    <style>
+    <style include="shared-styles">
       :host {
         display: flex;
         line-height: 1em;
@@ -12,70 +12,29 @@
         align-items: center;
       }
 
-      .reponame-cont {
-        flex: 1 0 0;
-        display: inline-block;
-        width: auto;
-        line-height: 3em;
-      }
-
-      .stargazers-cont,
-      .downloads-cont {
-        flex: 1;
-        display: inline-block;
-      }
-
       span {
         @apply(--paper-font-body1);
       }
 
-      .repo-icon {
-        display: inline-block;
-        vertical-align: middle;
-        line-height: 0.5;
-      }
-
-      .repo-name {
+      .item-name {
         font-size: 1.5em;
         vertical-align: middle;
+        margin: 5px;
       }
 
       .bookmark-checkbox {
         color: var(--paper-yellow-700);
       }
 
-      .downloads-cont,
-      .stargazers-cont {
-        text-align: right;
-      }
-
-      .positive-diff {
-        color: #61de61;
-        font-weight: bold;
-      }
-
-      .negative-diff {
-        color: red;
-        font-weight: bold;
-      }
-
     </style>
 
-    <div class="reponame-cont">
-      <template is="dom-if" if="{{!item.fork}}">
-        <iron-icon icon="app-svg-icons:repo-icon"></iron-icon>
-      </template>
+    <iron-icon class="flex-item-addon" icon="[[itemIcon]]"></iron-icon>
 
-      <template is="dom-if" if="{{item.fork}}">
-        <iron-icon icon="app-svg-icons:repo-forked-icon"></iron-icon>
-      </template>
-
-      <span class="repo-name">{{item.full_name}}</span>
-    </div>
+    <span class="item-name flex-main-item">{{item.full_name}}</span>
 
     <!-- <paper-checkbox class="comparison-checkbox" on-tap="checkUserRepo"></paper-checkbox> -->
     
-    <div on-tap="toggleSaveUserRepo">
+    <div class="flex-item-addon" on-tap="toggleSaveUserRepo">
       <template is="dom-if" if="{{!isSaved}}">
         <paper-icon-button class="bookmark-checkbox" icon="icons:star-border"></paper-icon-button>
       </template>

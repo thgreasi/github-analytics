@@ -4,7 +4,7 @@
 
 </head><body><dom-module id="repo-list-item">
   <template>
-    <style>
+    <style include="shared-styles">
       :host {
         display: block;
         /*display: flex;
@@ -15,18 +15,25 @@
         overflow: hidden;
       }
 
-      .repoCont {
+      span {
+        @apply(--paper-font-body1);
+      }
+
+      .item-cont {
         display: flex;
         line-height: 1em;
         flex-flow: row;
         align-items: center;
       }
 
-      .reponame-cont {
-        flex: 1 0 0;
-        display: inline-block;
-        width: auto;
-        line-height: 3em;
+      .item-icon {
+        margin: 5px 0;
+      }
+
+      .item-name {
+        font-size: 1.5em;
+        vertical-align: middle;
+        margin: 5px;
       }
 
       .stats-cont {
@@ -38,22 +45,9 @@
       .stargazers-cont,
       .downloads-cont {
         flex: 1;
-        display: inline-block;
-      }
-
-      span {
-        @apply(--paper-font-body1);
-      }
-
-      .repo-icon {
-        display: inline-block;
-        vertical-align: middle;
-        line-height: 0.5;
-      }
-
-      .repo-name {
-        font-size: 1.5em;
-        vertical-align: middle;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
       }
 
       [icon="star"] {
@@ -92,16 +86,14 @@
     </style>
 
     <iron-collapse id="collapse" opened="">
-      <div id="repoCont" class="repoCont">
+      <div id="repoCont" class="item-cont flex-item-with-addons">
 
-        <div class="reponame-cont">
-          <iron-icon icon="[[itemIcon]]"></iron-icon>
+        <iron-icon class="item-icon flex-item-addon" icon="[[itemIcon]]"></iron-icon>
 
-          <span class="repo-name">{{ item.name }}</span>
-        </div>
+        <span class="item-name flex-main-item">{{ item.name }}</span>
 
-        <div class="stats-cont">
-          <div class="stargazers-cont">
+        <div class="stats-cont flex-item-addon">
+          <div class="stargazers-cont flex-item-addon">
             <span class="diff">
               <template is="dom-if" if="{{ stargazersDiff }}">
                 <span class$="{{ getDiffClass(stargazersDiff) }}">
@@ -111,8 +103,8 @@
               </template>
             </span>
 
-            <span>{{ normalizeNumberLength(item.stargazers_count) }}</span>
-            <paper-icon-button class="bookmark-checkbox" icon="star" on-tap="unstarRepoTap"></paper-icon-button>
+            <span class="flex-item-addon">{{ normalizeNumberLength(item.stargazers_count) }}</span>
+            <paper-icon-button class="bookmark-checkbox flex-item-addon" icon="star" on-tap="unstarRepoTap"></paper-icon-button>
           </div>
 
           <div class="downloads-cont">

@@ -42,6 +42,11 @@
       isSaved: {
         type: Boolean,
         readOnly: true
+      },
+      itemIcon: {
+        type: String,
+        notify: true,
+        computed: '_computeItemIcon(item)'
       }
     },
 
@@ -72,6 +77,14 @@
         }
         this.set('savedItems', this.savedItems.slice());
       }
+    },
+
+    _computeItemIcon: function _computeItemIcon(item) {
+      if (item && item.fork) {
+        var weatherIconID = item.weather[0].id;
+        return 'app-svg-icons:repo-forked-icon';
+      }
+      return 'app-svg-icons:repo-icon';
     },
 
     ready: function ready() {}

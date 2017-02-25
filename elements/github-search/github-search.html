@@ -30,6 +30,7 @@
       }
 
       .user-name {
+        margin: 5px;
         font-size: 1.5em;
         font-weight: normal;
       }
@@ -49,9 +50,9 @@
         <paper-material class="no-padding" elevation="1">
           <ul class="unstyled">
             <template is="dom-repeat" items="{{userInfos}}">
-              <li class="paper-list-item user-name-li" on-tap="openUserInfoDialog">
-                <iron-icon icon="app-svg-icons:github-icon"></iron-icon>
-                <span class="user-name">{{item.login}}</span>
+              <li class="paper-list-item user-name-li flex-item-with-addons" on-tap="openUserInfoDialog">
+                <iron-icon class="user-icon flex-item-addon" icon="app-svg-icons:github-icon"></iron-icon>
+                <span class="user-name flex-main-item">{{item.login}}</span>
                 <paper-ripple></paper-ripple>
               </li>
             </template>
