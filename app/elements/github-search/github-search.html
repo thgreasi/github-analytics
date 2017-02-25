@@ -355,7 +355,11 @@
               this._setSelectedUserReposPromise(null);
               return repos;
             }));
-          userInfoDialog.open();
+
+          this.selectedUserReposPromise.catch(() => {}).then(() => {
+            this.$.userInfoDialog.refit();
+          });
+          this.$.userInfoDialog.open();
         },
 
         userInfoDialogOK: function (e, detail) {
