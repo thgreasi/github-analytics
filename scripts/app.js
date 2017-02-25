@@ -329,6 +329,10 @@
 	                var result = response.json();
 	                return result;
 	            }).then(function (result) {
+	                if (!result.items) {
+	                    console.log('search/repositories?q=' + reponame + ' => ', result);
+	                    result.items = [];
+	                }
 	                result.items = result.items.map(function (repo) {
 	                    return Object.assign(new RepositoryDetails(), repo);
 	                });
