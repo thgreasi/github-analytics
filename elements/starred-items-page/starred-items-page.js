@@ -51,7 +51,8 @@
         notify: true,
         value: function value() {
           return 'name';
-        }
+        },
+        observer: '_sortingTypeChangedObserver'
       },
       sortingDropDownOpened: {
         type: Boolean,
@@ -91,6 +92,18 @@
 
     sortingOptionSelected: function sortingOptionSelected() {
       this.set('sortingDropDownOpened', false);
+    },
+
+    _sortingTypeChangedObserver: function _sortingTypeChangedObserver(newValue) {
+      if (!newValue) {
+        return;
+      }
+      var localforage = document.createElement('iron-meta').byKey('localforage');
+      localforage.setItem('starred-items.sortingType.last', newValue).then(function () {
+        console.log('setItem(\'starred-items.sortingType.last\', ' + newValue + ') Saved!');
+      }).catch(function (e) {
+        console.error('setItem(\'starred-items.sortingType.last\', ' + newValue + ') Error', e);
+      });
     },
 
     refresh: function refresh() {
@@ -160,6 +173,13 @@
       localforage.getItem('data.repos.updateDate').then(function (d) {
         if (d && !_this3.updateDate) {
           _this3._setUpdateDate(d);
+        }
+      });
+
+      localforage.getItem('starred-items.sortingType.last').then(function (lastValue) {
+        console.log('getItem(\'starred-items.sortingType.last\') => ' + lastValue);
+        if (lastValue && lastValue !== _this3.sortingType) {
+          _this3.set('sortingType', lastValue);
         }
       });
     }

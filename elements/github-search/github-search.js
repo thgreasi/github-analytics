@@ -209,7 +209,11 @@
         _this2._setSelectedUserReposPromise(null);
         return repos;
       }));
-      userInfoDialog.open();
+
+      this.selectedUserReposPromise.catch(function () {}).then(function () {
+        _this2.$.userInfoDialog.refit();
+      });
+      this.$.userInfoDialog.open();
     },
 
     userInfoDialogOK: function userInfoDialogOK(e, detail) {},

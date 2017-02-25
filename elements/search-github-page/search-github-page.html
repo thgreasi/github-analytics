@@ -30,14 +30,7 @@
 
     </style>
 
-    <polymer-localforage id="lastSearchTermStorage" name="search.searchTerms.last" value="{{searchTerm}}" use-raw=""></polymer-localforage>
-
     <paper-material elevation="1">
-      <!-- <label for="user-input">Search by user or organization:</label>
-      <div>
-        <input id="user-input" value="{{searchTerm::input}}" placeholder="3 characters min">
-      </div> -->
-
       <form is="iron-form" id="searchForm">
         <paper-input id="searchInput" bind-value="{{searchTermTmp}}" label="Search by user or organization">
           <paper-icon-button suffix="" on-tap="setSearchTerm" icon="search" alt="search" title="search">
