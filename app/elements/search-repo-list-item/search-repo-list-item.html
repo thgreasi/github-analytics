@@ -17,9 +17,12 @@
       }
 
       .item-name {
-        font-size: 1.5em;
-        vertical-align: middle;
         margin: 5px;
+        font-size: 1.5em;
+        font-weight: normal;
+        vertical-align: middle;
+        color: inherit;
+        text-decoration: none;
       }
 
       .bookmark-checkbox {
@@ -30,7 +33,9 @@
 
     <iron-icon class="flex-item-addon" icon="[[itemIcon]]"></iron-icon>
 
-    <span class="item-name flex-main-item">{{item.full_name}}</span>
+    <a class="flex-main-item item-name" href$="[[item.html_url]]" target="_blank">
+      {{item.full_name}}
+    </a>
 
     <!-- <paper-checkbox class="comparison-checkbox" on-tap="checkUserRepo"></paper-checkbox> -->
     
