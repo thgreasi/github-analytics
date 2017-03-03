@@ -198,6 +198,7 @@
                 let p = `repos.${path.replace('${i}', i)}`;
                 this.notifyPath(p, this.get(p));
               }
+              return true;
             }))).catch((e) => { console.error('Error:', e); });
           }));
 
@@ -210,7 +211,7 @@
           });
 
           promise.then(results => {
-            if ((results || []).filter(x => !!x).length) {
+            if ((results || []).filter(x => !!x && !!x[0]).length) {
               var d = new Date();
               this._setUpdateDate(d);
               var localforage = document.createElement('iron-meta').byKey('localforage');
