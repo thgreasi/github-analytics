@@ -46,6 +46,12 @@ export class GithubService {
             });
     }
 
+    static getRepoDetailsByFullName (fullName) {
+        var username = (fullName || '').split('/')[0];
+        var repo = (fullName || '').split('/')[1];
+        return GithubService.getRepoDetails(username, repo);
+    }
+
     static searchUser (username) {
         return new Promise((resolve) => {
             var match = mockUserSearchData[username];
