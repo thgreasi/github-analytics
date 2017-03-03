@@ -124,6 +124,7 @@
               var _p = 'repos.' + path.replace('${i}', i);
               _this2.notifyPath(_p, _this2.get(_p));
             }
+            return true;
           });
         })).catch(function (e) {
           console.error('Error:', e);
@@ -140,7 +141,7 @@
 
       promise.then(function (results) {
         if ((results || []).filter(function (x) {
-          return !!x;
+          return !!x && !!x[0];
         }).length) {
           var d = new Date();
           _this2._setUpdateDate(d);

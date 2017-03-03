@@ -26123,6 +26123,7 @@ window.addEventListener('WebComponentsReady', function () {
 
       .item-cont {
         display: flex;
+        min-height: 48px;
         line-height: 1em;
         flex-flow: row;
         align-items: center;
@@ -26133,9 +26134,12 @@ window.addEventListener('WebComponentsReady', function () {
       }
 
       .item-name {
-        font-size: 1.5em;
-        vertical-align: middle;
         margin: 5px;
+        font-size: 1.5em;
+        font-weight: normal;
+        vertical-align: middle;
+        color: inherit;
+        text-decoration: none;
       }
 
       .stats-cont {
@@ -26192,7 +26196,9 @@ window.addEventListener('WebComponentsReady', function () {
 
         <iron-icon class="item-icon flex-item-addon" icon="[[itemIcon]]"></iron-icon>
 
-        <span class="item-name flex-main-item">{{ item.name }}</span>
+        <a class="flex-main-item item-name" href$="[[item.html_url]]" target="_blank">
+          {{ item.name }}
+        </a>
 
         <div class="stats-cont flex-item-addon">
           <div class="stargazers-cont flex-item-addon">
@@ -26680,9 +26686,12 @@ window.addEventListener('WebComponentsReady', function () {
       }
 
       .item-name {
-        font-size: 1.5em;
-        vertical-align: middle;
         margin: 5px;
+        font-size: 1.5em;
+        font-weight: normal;
+        vertical-align: middle;
+        color: inherit;
+        text-decoration: none;
       }
 
       .bookmark-checkbox {
@@ -26693,7 +26702,9 @@ window.addEventListener('WebComponentsReady', function () {
 
     <iron-icon class="flex-item-addon" icon="[[itemIcon]]"></iron-icon>
 
-    <span class="item-name flex-main-item">{{item.full_name}}</span>
+    <a class="flex-main-item item-name" href$="[[item.html_url]]" target="_blank">
+      {{item.full_name}}
+    </a>
 
     
     
@@ -27113,6 +27124,7 @@ window.addEventListener('WebComponentsReady', function () {
               var _p = 'repos.' + path.replace('${i}', i);
               _this2.notifyPath(_p, _this2.get(_p));
             }
+            return true;
           });
         })).catch(function (e) {
           console.error('Error:', e);
@@ -27129,7 +27141,7 @@ window.addEventListener('WebComponentsReady', function () {
 
       promise.then(function (results) {
         if ((results || []).filter(function (x) {
-          return !!x;
+          return !!x && !!x[0];
         }).length) {
           var d = new Date();
           _this2._setUpdateDate(d);

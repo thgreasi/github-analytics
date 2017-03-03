@@ -21,6 +21,7 @@
 
       .item-cont {
         display: flex;
+        min-height: 48px;
         line-height: 1em;
         flex-flow: row;
         align-items: center;
@@ -31,9 +32,12 @@
       }
 
       .item-name {
-        font-size: 1.5em;
-        vertical-align: middle;
         margin: 5px;
+        font-size: 1.5em;
+        font-weight: normal;
+        vertical-align: middle;
+        color: inherit;
+        text-decoration: none;
       }
 
       .stats-cont {
@@ -90,7 +94,9 @@
 
         <iron-icon class="item-icon flex-item-addon" icon="[[itemIcon]]"></iron-icon>
 
-        <span class="item-name flex-main-item">{{ item.name }}</span>
+        <a class="flex-main-item item-name" href$="[[item.html_url]]" target="_blank">
+          {{ item.name }}
+        </a>
 
         <div class="stats-cont flex-item-addon">
           <div class="stargazers-cont flex-item-addon">
