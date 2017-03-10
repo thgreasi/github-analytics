@@ -275,7 +275,7 @@
           var sign = num < 0 ? '-' : '';
           var scale = Math.min(Math.log10(Math.abs(num)) | 0, scaleLiterals.length * 3);
           if (scale >= 3) {
-            var tmp = Math.abs(num) / Math.pow(10, scale);
+            var tmp = Math.abs(num) / Math.pow(10, scale - scale % 3);
             if (scale % 3 === 0) {
               tmp = ((10 * tmp) | 0) / 10;
             } else {
@@ -284,7 +284,7 @@
             return sign + tmp + scaleLiterals[((scale / 3) | 0) - 1];
           }
           
-          return num;
+          return num + '';
         }
       });
     })();
