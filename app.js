@@ -108,13 +108,31 @@
 	    function RepositoryDetails() {
 	        babelHelpers.classCallCheck(this, RepositoryDetails);
 
-	        this.stargazersHistory = this.stargazersHistory || [];
-	        this.downloadsHistory = this.downloadsHistory || [];
+	        this.stargazersHistory = [];
+	        this.downloadsHistory = [];
 	    }
 
 	    babelHelpers.createClass(RepositoryDetails, [{
+	        key: 'clearSessionData',
+	        value: function clearSessionData() {
+	            this.stargazersDiff = null;
+	            this.downloadsDiff = null;
+	            return this;
+	        }
+	    }, {
+	        key: '_setProp',
+	        value: function _setProp(key, value, setPathFn) {
+	            if (this[key] !== value) {
+	                if (typeof setPathFn === 'function') {
+	                    setPathFn('.' + key, value);
+	                } else {
+	                    this[key] = value;
+	                }
+	            }
+	        }
+	    }, {
 	        key: 'setStargazers',
-	        value: function setStargazers(value) {
+	        value: function setStargazers(value, setPathFn) {
 	            if (value !== +value) {
 	                return;
 	            }
@@ -129,57 +147,60 @@
 	            }
 
 	            if (this.stargazers_count !== value) {
-	                this.stargazers_count = value;
-	                this.stargazers_count_lastUpdateDate = date;
+	                if (this.stargazersHistory.length > 1) {
+	                    this._setProp('stargazersDiff', value - this.stargazers_count, setPathFn);
+	                }
+	                this._setProp('stargazers_count', value, setPathFn);
+	                this._setProp('stargazers_count_lastUpdateDate', date, setPathFn);
 	            }
 	        }
 	    }, {
 	        key: 'updateDetails',
-	        value: function updateDetails() {
+	        value: function updateDetails(setPathFn) {
 	            var _this = this;
 
 	            var GithubService = document.createElement('iron-meta').byKey('GithubService');
-	            // return GithubService.getRepoDetails(this.owner.login, this.name).then(repo => {
-	            return GithubService.getRepoDetailsByFullName(this.full_name).then(function (repo) {
-	                if (!repo) {
+	            // return GithubService.getRepoDetails(this.owner.login, this.name).then(data => {
+	            return GithubService.getRepoDetailsByFullName(this.full_name).then(function (data) {
+	                if (!data) {
 	                    return;
 	                }
 
-	                _this.setStargazers(repo.stargazers_count);
-	                Object.keys(repo).filter(function (k) {
-	                    return typeof repo[k] !== 'function' && k !== 'stargazersHistory' && k !== 'downloadsHistory';
-	                }).forEach(function (k) {
-	                    _this[k] = repo[k];
-	                });
-	                return repo;
-	            });
-	        }
-
-	        /*updateDetails (setPathFn) {
-	            var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
-	            return searchProvider.getCityWeatherByID(this.id).then(data => {
-	                console.log('asdf', data);
-	                if (!data || !data.id) {
-	                    return;
-	                }
-	                Object.keys(data).forEach(key => {
-	                    var newProp = data[key];
-	                    if (this[key] !== newProp) {
-	                        // this.set(`items.#${index}.${key}`, newProp);
-	                        if (typeof setPathFn === 'function') {
-	                            setPathFn(`.${key}`, newProp);
-	                        } else {
-	                            this[key] = newProp;
-	                        }
-	                    }
+	                _this.setStargazers(data.stargazers_count, setPathFn);
+	                Object.keys(data).filter(function (key) {
+	                    return typeof data[key] !== 'function' && key !== 'stargazersHistory' && key !== 'downloadsHistory' && key !== 'viewModelData';
+	                }).forEach(function (key) {
+	                    return _this._setProp(key, data[key], setPathFn);
 	                });
 	                return data;
 	            });
-	        }*/
+	        }
+
+	        // updateDetails (setPathFn) {
+	        //     var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
+	        //     return searchProvider.getCityWeatherByID(this.id).then(data => {
+	        //         console.log('asdf', data);
+	        //         if (!data || !data.id) {
+	        //             return;
+	        //         }
+	        //         Object.keys(data).forEach(key => {
+	        //             var newProp = data[key];
+	        //             if (this[key] !== newProp) {
+	        //                 // this.set(`items.#${index}.${key}`, newProp);
+	        //                 if (typeof setPathFn === 'function') {
+	        //                     setPathFn(`.${key}`, newProp);
+	        //                 } else {
+	        //                     this[key] = newProp;
+	        //                 }
+	        //             }
+	        //         });
+	        //         return data;
+	        //     });
+	        // }
 
 	    }, {
 	        key: 'setDownloads',
-	        value: function setDownloads(value) {
+	        value: function setDownloads(value, setPathFn) {
 	            if (value !== +value) {
 	                return;
 	            }
@@ -194,13 +215,16 @@
 	            }
 
 	            if (this.downloads !== value) {
-	                this.downloads = value;
-	                this.downloads_lastUpdateDate = date;
+	                if (this.downloadsHistory.length > 1) {
+	                    this._setProp('downloadsDiff', value - this.downloads, setPathFn);
+	                }
+	                this._setProp('downloads', value, setPathFn);
+	                this._setProp('downloads_lastUpdateDate', date, setPathFn);
 	            }
 	        }
 	    }, {
 	        key: 'updateDownloads',
-	        value: function updateDownloads() {
+	        value: function updateDownloads(setPathFn) {
 	            var _this2 = this;
 
 	            if (this.fork) {
@@ -210,7 +234,7 @@
 	            this.downloads_lastRequestDate = new Date();
 	            var NpmService = document.createElement('iron-meta').byKey('NpmService');
 	            return NpmService.getDownloadCountsLastMonth(this.name).then(function (dls) {
-	                _this2.setDownloads(dls.downloads);
+	                _this2.setDownloads(dls.downloads, setPathFn);
 	                return dls;
 	            });
 	        }
@@ -419,7 +443,7 @@
 	  }
 
 	  repos = repos.map(function (repo) {
-	    return Object.assign(new RepositoryDetails(), repo);
+	    return Object.assign(new RepositoryDetails(), repo).clearSessionData();
 	  });
 
 	  console.log('LOADED!', repos);

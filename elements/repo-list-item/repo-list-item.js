@@ -19,14 +19,14 @@
           return {};
         }
       },
-      stargazersDiff: {
-        type: Number,
-        readOnly: true
-      },
-      downloadsDiff: {
-        type: Number,
-        readOnly: true
-      },
+      // stargazersDiff: {
+      //   type: Number,
+      //   readOnly: true
+      // },
+      // downloadsDiff: {
+      //   type: Number,
+      //   readOnly: true
+      // },
       itemIcon: {
         type: String,
         notify: true,
@@ -34,17 +34,29 @@
       }
     },
 
-    observers: ['_stargazersChanged(item.stargazers_count)', '_downloadsChanged(item.downloads)'],
+    // observers: [
+    //     '_stargazersChanged(item.stargazers_count)',
+    //     '_downloadsChanged(item.downloads)'
+    // ],
 
-    _stargazersChanged: function _stargazersChanged(newValue) {
-      var diff = this.getLastRecordsDiff(this.item && this.item.stargazersHistory);
-      this._setStargazersDiff(diff);
-    },
+    // _stargazersChanged: function (newValue) {
+    //   let diff = this._getLastRecordsDiff(this.item && this.item.stargazersHistory);
+    //   this._setStargazersDiff(diff);
+    // },
 
-    _downloadsChanged: function _downloadsChanged(newValue) {
-      var diff = this.getLastRecordsDiff(this.item && this.item.downloadsHistory);
-      this._setDownloadsDiff(diff);
-    },
+    // _downloadsChanged: function (newValue) {
+    //   let diff = this._getLastRecordsDiff(this.item && this.item.downloadsHistory);
+    //   this._setDownloadsDiff(diff);
+    // },
+
+    // _getLastRecordsDiff: function (array) {
+    //   if (array &&
+    //       array.length >= 2) {
+    //     let len = array.length;
+    //     return array[len - 1].value - array[len - 2].value;
+    //   }
+    //   return 0;
+    // },
 
     _itemChangedObserver: function _itemChangedObserver(newValue) {
       var _this = this;
@@ -64,7 +76,6 @@
 
     _computeItemIcon: function _computeItemIcon(item) {
       if (item && item.fork) {
-        var weatherIconID = item.weather[0].id;
         return 'app-svg-icons:repo-forked-icon';
       }
       return 'app-svg-icons:repo-icon';
@@ -95,14 +106,6 @@
       }
     },
 
-    getLastRecordsDiff: function getLastRecordsDiff(array) {
-      if (array && array.length >= 2) {
-        var len = array.length;
-        return array[len - 1].value - array[len - 2].value;
-      }
-      return 0;
-    },
-
     isPositive: function isPositive(number) {
       return number > 0;
     },
@@ -130,7 +133,7 @@
       var sign = num < 0 ? '-' : '';
       var scale = Math.min(Math.log10(Math.abs(num)) | 0, scaleLiterals.length * 3);
       if (scale >= 3) {
-        var tmp = Math.abs(num) / Math.pow(10, scale);
+        var tmp = Math.abs(num) / Math.pow(10, scale - scale % 3);
         if (scale % 3 === 0) {
           tmp = (10 * tmp | 0) / 10;
         } else {
@@ -139,7 +142,7 @@
         return sign + tmp + scaleLiterals[(scale / 3 | 0) - 1];
       }
 
-      return num;
+      return num + '';
     }
   });
 })();

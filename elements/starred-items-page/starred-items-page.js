@@ -69,8 +69,6 @@
     // },
 
     _itemsChanged: function _itemsChanged(changeRecord) {
-      var _this = this;
-
       console.log('_itemsChanged', changeRecord);
       var ironMeta = document.createElement('iron-meta');
       var dataItemsLoaded = ironMeta.byKey('dataItemsLoaded');
@@ -81,7 +79,7 @@
       }
       var localforage = ironMeta.byKey('localforage');
       localforage.setItem('data.repos', this.repos).then(function () {
-        console.log('Saved', 'data.repos', _this.repos);
+        // console.log('Saved', 'data.repos', this.repos);
       });
     },
 
@@ -107,35 +105,43 @@
     },
 
     refresh: function refresh() {
-      var _this2 = this;
+      var _this = this;
 
       var promise = Promise.all(this.repos.map(function (repo) {
-        return Promise.all([repo.updateDetails().then(function () {
-          return '#${i}.stargazers_count';
-        }), repo.updateDownloads().then(function () {
-          return '#${i}.downloads';
-        })].map(function (p) {
-          return p.then(function (path) {
-            if (!path) {
-              return;
-            }
-            var i = _this2.repos.indexOf(repo);
-            if (i >= 0) {
-              var _p = 'repos.' + path.replace('${i}', i);
-              _this2.notifyPath(_p, _this2.get(_p));
-            }
-            return true;
+        var setFn = function setFn(subPath, value) {
+          var index = _this.repos.indexOf(repo);
+          if (index >= 0) {
+            console.log('Updating repos.#' + index + subPath + ': ' + value);
+            _this.set('repos.#' + index + subPath, value);
+          }
+        };
+        return Promise.all([repo.updateDetails(setFn), repo.updateDownloads(setFn)].map(function (p) {
+          return p.catch(function (e) {
+            console.error('Error:', e);
           });
-        })).catch(function (e) {
-          console.error('Error:', e);
-        });
+        }));
+
+        // return Promise.all([
+        //   repo.updateDetails().then(() => '#${i}.stargazers_count'),
+        //   repo.updateDownloads().then(() => '#${i}.downloads')
+        // ].map((p) => p.then((path) => {
+        //   if (!path) {
+        //     return;
+        //   }
+        //   let i = this.repos.indexOf(repo);
+        //   if (i >= 0) {
+        //     let p = `repos.${path.replace('${i}', i)}`;
+        //     this.notifyPath(p, this.get(p));
+        //   }
+        //   return true;
+        // }))).catch((e) => { console.error('Error:', e); });
       }));
 
       this._setActivePromise(promise);
 
       promise.catch(function () {}).then(function () {
-        if (_this2.activePromise === promise) {
-          _this2._setActivePromise(null);
+        if (_this.activePromise === promise) {
+          _this._setActivePromise(null);
         }
       });
 
@@ -144,7 +150,7 @@
           return !!x && !!x[0];
         }).length) {
           var d = new Date();
-          _this2._setUpdateDate(d);
+          _this._setUpdateDate(d);
           var localforage = document.createElement('iron-meta').byKey('localforage');
           localforage.setItem('data.repos.updateDate', d);
         }
@@ -168,19 +174,19 @@
     },
 
     ready: function ready() {
-      var _this3 = this;
+      var _this2 = this;
 
       var localforage = document.createElement('iron-meta').byKey('localforage');
       localforage.getItem('data.repos.updateDate').then(function (d) {
-        if (d && !_this3.updateDate) {
-          _this3._setUpdateDate(d);
+        if (d && !_this2.updateDate) {
+          _this2._setUpdateDate(d);
         }
       });
 
       localforage.getItem('starred-items.sortingType.last').then(function (lastValue) {
         console.log('getItem(\'starred-items.sortingType.last\') => ' + lastValue);
-        if (lastValue && lastValue !== _this3.sortingType) {
-          _this3.set('sortingType', lastValue);
+        if (lastValue && lastValue !== _this2.sortingType) {
+          _this2.set('sortingType', lastValue);
         }
       });
     }
