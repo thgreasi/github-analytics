@@ -1,11 +1,27 @@
 export default class RepositoryDetails {
 
     constructor () {
-        this.stargazersHistory = this.stargazersHistory || [];
-        this.downloadsHistory = this.downloadsHistory || [];
+        this.stargazersHistory = [];
+        this.downloadsHistory = [];
     }
 
-    setStargazers (value) {
+    clearSessionData() {
+        this.stargazersDiff = null;
+        this.downloadsDiff = null;
+        return this;
+    }
+
+    _setProp(key, value, setPathFn) {
+        if (this[key] !== value) {
+            if (typeof setPathFn === 'function') {
+                setPathFn(`.${key}`, value);
+            } else {
+                this[key] = value;
+            }
+        }
+    }
+
+    setStargazers (value, setPathFn) {
         if (value !== +value) {
             return;
         }
@@ -20,54 +36,56 @@ export default class RepositoryDetails {
         }
 
         if (this.stargazers_count !== value) {
-            this.stargazers_count = value;
-            this.stargazers_count_lastUpdateDate = date;
+            if (this.stargazersHistory.length > 1) {
+                this._setProp('stargazersDiff', value - this.stargazers_count, setPathFn);
+            }
+            this._setProp('stargazers_count', value, setPathFn);
+            this._setProp('stargazers_count_lastUpdateDate', date, setPathFn);
         }
     }
 
-    updateDetails () {
+    updateDetails (setPathFn) {
         var GithubService = document.createElement('iron-meta').byKey('GithubService');
-        // return GithubService.getRepoDetails(this.owner.login, this.name).then(repo => {
-        return GithubService.getRepoDetailsByFullName(this.full_name).then(repo => {
-            if (!repo) {
+        // return GithubService.getRepoDetails(this.owner.login, this.name).then(data => {
+        return GithubService.getRepoDetailsByFullName(this.full_name).then(data => {
+            if (!data) {
                 return;
             }
 
-            this.setStargazers(repo.stargazers_count);
-            Object.keys(repo).filter(k =>
-                typeof repo[k] !== 'function' &&
-                k !== 'stargazersHistory' &&
-                k !== 'downloadsHistory'
-            ).forEach(k => {
-                this[k] = repo[k];
-            });
-            return repo;
+            this.setStargazers(data.stargazers_count, setPathFn);
+            Object.keys(data).filter(key =>
+                typeof data[key] !== 'function' &&
+                key !== 'stargazersHistory' &&
+                key !== 'downloadsHistory' &&
+                key !== 'viewModelData'
+            ).forEach(key => this._setProp(key, data[key], setPathFn));
+            return data;
         });
     }
     
-    /*updateDetails (setPathFn) {
-        var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
-        return searchProvider.getCityWeatherByID(this.id).then(data => {
-            console.log('asdf', data);
-            if (!data || !data.id) {
-                return;
-            }
-            Object.keys(data).forEach(key => {
-                var newProp = data[key];
-                if (this[key] !== newProp) {
-                    // this.set(`items.#${index}.${key}`, newProp);
-                    if (typeof setPathFn === 'function') {
-                        setPathFn(`.${key}`, newProp);
-                    } else {
-                        this[key] = newProp;
-                    }
-                }
-            });
-            return data;
-        });
-    }*/
+    // updateDetails (setPathFn) {
+    //     var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
+    //     return searchProvider.getCityWeatherByID(this.id).then(data => {
+    //         console.log('asdf', data);
+    //         if (!data || !data.id) {
+    //             return;
+    //         }
+    //         Object.keys(data).forEach(key => {
+    //             var newProp = data[key];
+    //             if (this[key] !== newProp) {
+    //                 // this.set(`items.#${index}.${key}`, newProp);
+    //                 if (typeof setPathFn === 'function') {
+    //                     setPathFn(`.${key}`, newProp);
+    //                 } else {
+    //                     this[key] = newProp;
+    //                 }
+    //             }
+    //         });
+    //         return data;
+    //     });
+    // }
 
-    setDownloads (value) {
+    setDownloads (value, setPathFn) {
         if (value !== +value) {
             return;
         }
@@ -82,12 +100,15 @@ export default class RepositoryDetails {
         }
 
         if (this.downloads !== value) {
-            this.downloads = value;
-            this.downloads_lastUpdateDate = date;
+            if (this.downloadsHistory.length > 1) {
+                this._setProp('downloadsDiff', value - this.downloads, setPathFn);
+            }
+            this._setProp('downloads', value, setPathFn);
+            this._setProp('downloads_lastUpdateDate', date, setPathFn);
         }
     }
 
-    updateDownloads () {
+    updateDownloads (setPathFn) {
         if (this.fork) {
             // TODO: actually check the NPM package target
             return Promise.resolve(0);
@@ -95,7 +116,7 @@ export default class RepositoryDetails {
         this.downloads_lastRequestDate = new Date();
         var NpmService = document.createElement('iron-meta').byKey('NpmService');
         return NpmService.getDownloadCountsLastMonth(this.name).then(dls => {
-            this.setDownloads(dls.downloads);
+            this.setDownloads(dls.downloads, setPathFn);
             return dls;
         });
     }

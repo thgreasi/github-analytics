@@ -54,6 +54,11 @@
         justify-content: flex-end;
       }
 
+      .diff,
+      .value {
+        min-width: 2em;
+      }
+
       [icon="star"] {
         color: var(--paper-yellow-700);
       }
@@ -101,15 +106,15 @@
         <div class="stats-cont flex-item-addon">
           <div class="stargazers-cont flex-item-addon">
             <span class="diff">
-              <template is="dom-if" if="{{ stargazersDiff }}">
-                <span class$="{{ getDiffClass(stargazersDiff) }}">
-                  <template is="dom-if" if="{{ isPositive(stargazersDiff) }}">+</template>
-                  {{ normalizeNumberLength(stargazersDiff) }}
+              <template is="dom-if" if="{{ item.stargazersDiff }}">
+                <span class$="{{ getDiffClass(item.stargazersDiff) }}">
+                  <template is="dom-if" if="{{ isPositive(item.stargazersDiff) }}">+</template>
+                  {{ normalizeNumberLength(item.stargazersDiff) }}
                 </span>
               </template>
             </span>
 
-            <span class="flex-item-addon">{{ normalizeNumberLength(item.stargazers_count) }}</span>
+            <span class="value flex-item-addon">{{ normalizeNumberLength(item.stargazers_count) }}</span>
             <paper-icon-button class="bookmark-checkbox flex-item-addon" icon="star" on-tap="unstarRepoTap"></paper-icon-button>
           </div>
 
@@ -117,15 +122,15 @@
             <template is="dom-if" if="{{ item.downloads }}">
 
               <span class="diff">
-                <template is="dom-if" if="{{ downloadsDiff }}">
-                  <span class$="{{ getDiffClass(downloadsDiff) }}">
-                    <template is="dom-if" if="{{ isPositive(downloadsDiff) }}">+</template>
-                    {{ normalizeNumberLength(downloadsDiff) }}
+                <template is="dom-if" if="{{ item.downloadsDiff }}">
+                  <span class$="{{ getDiffClass(item.downloadsDiff) }}">
+                    <template is="dom-if" if="{{ isPositive(item.downloadsDiff) }}">+</template>
+                    {{ normalizeNumberLength(item.downloadsDiff) }}
                   </span>
                 </template>
               </span>
 
-              <span>{{ normalizeNumberLength(item.downloads) }}</span>
+              <span class="value">{{ normalizeNumberLength(item.downloads) }}</span>
               <iron-icon icon="file-download"></iron-icon>
             </template>
           </div>
@@ -156,14 +161,14 @@
             observer: '_itemChangedObserver',
             value: function() { return {}; }
           },
-          stargazersDiff: {
-            type: Number,
-            readOnly: true
-          },
-          downloadsDiff: {
-            type: Number,
-            readOnly: true
-          },
+          // stargazersDiff: {
+          //   type: Number,
+          //   readOnly: true
+          // },
+          // downloadsDiff: {
+          //   type: Number,
+          //   readOnly: true
+          // },
           itemIcon: {
             type: String,
             notify: true,
@@ -171,21 +176,29 @@
           }
         },
 
-        observers: [
-            '_stargazersChanged(item.stargazers_count)',
-            '_downloadsChanged(item.downloads)'
-        ],
+        // observers: [
+        //     '_stargazersChanged(item.stargazers_count)',
+        //     '_downloadsChanged(item.downloads)'
+        // ],
 
-        _stargazersChanged: function (newValue) {
-          let diff = this.getLastRecordsDiff(this.item && this.item.stargazersHistory);
-          this._setStargazersDiff(diff);
-        },
+        // _stargazersChanged: function (newValue) {
+        //   let diff = this._getLastRecordsDiff(this.item && this.item.stargazersHistory);
+        //   this._setStargazersDiff(diff);
+        // },
 
-        _downloadsChanged: function (newValue) {
-          let diff = this.getLastRecordsDiff(this.item && this.item.downloadsHistory);
-          this._setDownloadsDiff(diff);
-        },
+        // _downloadsChanged: function (newValue) {
+        //   let diff = this._getLastRecordsDiff(this.item && this.item.downloadsHistory);
+        //   this._setDownloadsDiff(diff);
+        // },
 
+        // _getLastRecordsDiff: function (array) {
+        //   if (array &&
+        //       array.length >= 2) {
+        //     let len = array.length;
+        //     return array[len - 1].value - array[len - 2].value;
+        //   }
+        //   return 0;
+        // },
 
         _itemChangedObserver: function (newValue) {
           if (newValue &&
@@ -204,7 +217,6 @@
 
         _computeItemIcon: function(item) {
           if (item && item.fork) {
-            var weatherIconID = item.weather[0].id;
             return 'app-svg-icons:repo-forked-icon';
           }
           return 'app-svg-icons:repo-icon';
@@ -229,15 +241,6 @@
               this.$.collapse.show();
             }, 500);
           }
-        },
-
-        getLastRecordsDiff: function (array) {
-          if (array &&
-              array.length >= 2) {
-            let len = array.length;
-            return array[len - 1].value - array[len - 2].value;
-          }
-          return 0;
         },
 
         isPositive: function (number) {

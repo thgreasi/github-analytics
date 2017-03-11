@@ -160,7 +160,7 @@
           }
           var localforage = ironMeta.byKey('localforage');
           localforage.setItem('data.repos', this.repos).then(() => {
-            console.log('Saved', 'data.repos', this.repos);
+            // console.log('Saved', 'data.repos', this.repos);
           });
         },
 
@@ -186,20 +186,32 @@
 
         refresh: function() {
           var promise = Promise.all(this.repos.map((repo) => {
+            let setFn = (subPath, value) => {
+              let index = this.repos.indexOf(repo);
+              if (index >= 0) {
+                console.log(`Updating repos.#${index}${subPath}: ${value}`);
+                this.set(`repos.#${index}${subPath}`, value);
+              }
+            };
             return Promise.all([
-              repo.updateDetails().then(() => '#${i}.stargazers_count'),
-              repo.updateDownloads().then(() => '#${i}.downloads')
-            ].map((p) => p.then((path) => {
-              if (!path) {
-                return;
-              }
-              let i = this.repos.indexOf(repo);
-              if (i >= 0) {
-                let p = `repos.${path.replace('${i}', i)}`;
-                this.notifyPath(p, this.get(p));
-              }
-              return true;
-            }))).catch((e) => { console.error('Error:', e); });
+              repo.updateDetails(setFn),
+              repo.updateDownloads(setFn)
+            ].map(p => p.catch(e => { console.error('Error:', e); })));
+
+            // return Promise.all([
+            //   repo.updateDetails().then(() => '#${i}.stargazers_count'),
+            //   repo.updateDownloads().then(() => '#${i}.downloads')
+            // ].map((p) => p.then((path) => {
+            //   if (!path) {
+            //     return;
+            //   }
+            //   let i = this.repos.indexOf(repo);
+            //   if (i >= 0) {
+            //     let p = `repos.${path.replace('${i}', i)}`;
+            //     this.notifyPath(p, this.get(p));
+            //   }
+            //   return true;
+            // }))).catch((e) => { console.error('Error:', e); });
           }));
 
           this._setActivePromise(promise);
