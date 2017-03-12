@@ -27,6 +27,10 @@ app.reloadPage = function() {
   }
 };
 
+app.searchPageBtnTap = function() {
+  app.page.show('/');
+};
+
 app.dataItemsLoaded = false;
 var reposOnLoadPromise = localforage.getItem('data.repos').then(repos => {
     if (!Array.isArray(repos)) {

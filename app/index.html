@@ -112,9 +112,9 @@
 
           <!-- Toolbar icons -->
           <template is="dom-if" if="{{crntPageHasRefresh}}">
-            <paper-icon-button on-tap="reloadPage" icon="refresh"></paper-icon-button>
+            <paper-icon-button icon="refresh" on-tap="reloadPage"></paper-icon-button>
           </template>
-          <paper-icon-button icon="search"></paper-icon-button>
+          <paper-icon-button icon="search" on-tap="searchPageBtnTap"></paper-icon-button>
 
           <!-- Application name -->
           <div class="middle middle-container">
