@@ -30,8 +30,8 @@
 
       var ascSorting = !this.sort || this.sort === 'name' ? 1 : -1;
 
-      var aa = a[this.sort];
-      var bb = b[this.sort];
+      var aa = a[this.sort] || 0;
+      var bb = b[this.sort] || 0;
       if (aa < bb) {
         return -1 * ascSorting;
       }
