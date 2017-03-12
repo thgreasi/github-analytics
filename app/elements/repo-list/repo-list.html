@@ -66,8 +66,8 @@
           
           let ascSorting = !this.sort || this.sort === 'name' ? 1 : -1;
 
-          let aa = a[this.sort];
-          let bb = b[this.sort];
+          let aa = a[this.sort] || 0;
+          let bb = b[this.sort] || 0;
           if(aa < bb) {
             return -1 * ascSorting;
           }
