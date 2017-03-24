@@ -88,6 +88,11 @@
             type: Array,
             notify: true
           },
+
+          debug: {
+            type: Boolean,
+            notify: false
+          }
         },
 
         _searchTermUnDebouncedChangedObserver: function (newValue) {
@@ -99,7 +104,7 @@
         _searchTermChangedObserver: function (newValue) {
           var localforage = document.createElement('iron-meta').byKey('localforage');
           localforage.setItem('search.searchTerms.last', newValue).then(() => {
-            console.log(`setItem('search.searchTerms.last', ${newValue}) Saved!`);
+            this.debug && console.log(`setItem('search.searchTerms.last', ${newValue}) Saved!`);
           }).catch((e) => {
             console.error(`setItem('search.searchTerms.last', ${newValue}) Error`, e);
           });
@@ -117,7 +122,7 @@
 
           var localforage = document.createElement('iron-meta').byKey('localforage');
           localforage.getItem('search.searchTerms.last').then((lastValue) => {
-            console.log(`getItem('search.searchTerms.last') => ${lastValue}`);
+            this.debug && console.log(`getItem('search.searchTerms.last') => ${lastValue}`);
             this.set('searchTerm', lastValue || '');
             this.set('searchTermTmp', lastValue || '');
             this.$.searchInput.value = this.searchTermTmp;

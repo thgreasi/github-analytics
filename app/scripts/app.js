@@ -39,17 +39,17 @@ var reposOnLoadPromise = localforage.getItem('data.repos').then(repos => {
 
     repos = repos.map(repo => Object.assign(new RepositoryDetails(), repo).clearSessionData());
 
-    console.log('LOADED!', repos);
+    app.debug && console.log('LOADED!', repos);
     return repos;
 }).catch(() => []);
 
 loadedPromise.then(() => {
-  console.log('loadedPromise');
+  app.debug && console.log('loadedPromise');
   return reposOnLoadPromise.then(repos => {
     // app.$.dataReposStorage.set('autoSaveDisabled', false);
     app.set('dataItemsLoaded', true);
     app.set('repos', repos);
-    console.log('SET repos', repos);
+    app.debug && console.log('SET repos', repos);
 
     if (repos && repos.length) {
       setTimeout(() => {
@@ -90,7 +90,7 @@ function processRepoInfos (repos) {
 
   // let args = repos.slice();
   // args.unshift('app.repos');
-  // console.log(args);
+  // app.debug && console.log(args);
   // app.push.apply(app, args);
 }
 

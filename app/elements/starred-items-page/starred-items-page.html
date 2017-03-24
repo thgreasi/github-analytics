@@ -136,6 +136,10 @@
           sortingDropDownOpened: {
             type: Boolean,
             notify: true
+          },
+          debug: {
+            type: Boolean,
+            notify: false
           }
         },
 
@@ -150,17 +154,17 @@
         // },
 
         _itemsChanged(changeRecord) {
-          console.log('_itemsChanged', changeRecord);
+          this.debug && console.log('_itemsChanged', changeRecord);
           var ironMeta = document.createElement('iron-meta');
           var dataItemsLoaded = ironMeta.byKey('dataItemsLoaded');
           if (!dataItemsLoaded) {
             // do not save anything until the old data are loaded
-            console.log('_itemsChanged save skipped');
+            this.debug && console.log('_itemsChanged save skipped');
             return;
           }
           var localforage = ironMeta.byKey('localforage');
           localforage.setItem('data.repos', this.repos).then(() => {
-            // console.log('Saved', 'data.repos', this.repos);
+            // this.debug && console.log('Saved', 'data.repos', this.repos);
           });
         },
 
@@ -178,7 +182,7 @@
           }
           var localforage = document.createElement('iron-meta').byKey('localforage');
           localforage.setItem('starred-items.sortingType.last', newValue).then(() => {
-            console.log(`setItem('starred-items.sortingType.last', ${newValue}) Saved!`);
+            this.debug && console.log(`setItem('starred-items.sortingType.last', ${newValue}) Saved!`);
           }).catch((e) => {
             console.error(`setItem('starred-items.sortingType.last', ${newValue}) Error`, e);
           });
@@ -189,7 +193,7 @@
             let setFn = (subPath, value) => {
               let index = this.repos.indexOf(repo);
               if (index >= 0) {
-                console.log(`Updating repos.#${index}${subPath}: ${value}`);
+                this.debug && console.log(`Updating repos.#${index}${subPath}: ${value}`);
                 this.set(`repos.#${index}${subPath}`, value);
               }
             };
@@ -197,21 +201,6 @@
               repo.updateDetails(setFn),
               repo.updateDownloads(setFn)
             ].map(p => p.catch(e => { console.error('Error:', e); })));
-
-            // return Promise.all([
-            //   repo.updateDetails().then(() => '#${i}.stargazers_count'),
-            //   repo.updateDownloads().then(() => '#${i}.downloads')
-            // ].map((p) => p.then((path) => {
-            //   if (!path) {
-            //     return;
-            //   }
-            //   let i = this.repos.indexOf(repo);
-            //   if (i >= 0) {
-            //     let p = `repos.${path.replace('${i}', i)}`;
-            //     this.notifyPath(p, this.get(p));
-            //   }
-            //   return true;
-            // }))).catch((e) => { console.error('Error:', e); });
           }));
 
           this._setActivePromise(promise);
@@ -257,7 +246,7 @@
           });
 
           localforage.getItem('starred-items.sortingType.last').then((lastValue) => {
-            console.log(`getItem('starred-items.sortingType.last') => ${lastValue}`);
+            this.debug && console.log(`getItem('starred-items.sortingType.last') => ${lastValue}`);
             if (lastValue && lastValue !== this.sortingType) {
               this.set('sortingType', lastValue);
             }
