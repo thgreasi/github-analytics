@@ -110,14 +110,8 @@ export default class RepositoryDetails {
                 .then(contentInfo => {
                     if (contentInfo && contentInfo.type === 'file') {
                         var packageJson = JSON.parse(atob(contentInfo.content));
-                        if (packageJson.name) {
-                            this.packageType = 'package.json';
-                            this.packageName = packageJson.name;
-                        }
+                        return packageJson.name;
                     }
-                }).catch(err => {
-                    console.log(err);
-                    this.packageType = false;
                 });
         }
 
@@ -131,7 +125,14 @@ export default class RepositoryDetails {
 
         this.downloads_lastRequestDate = new Date();
         
-        var packageNamePromise = this.getPackageJsonName().catch(() => {});
+        var packageNamePromise = this.getPackageJsonName().then(packageName => {
+            this.set('packageType', 'package.json');
+            this.set('packageName', packageName);
+            return packageName;
+        }).catch(err => {
+            console.error(err);
+            this.set('packageType', false);
+        });
 
         return packageNamePromise.then(packageName => {
             if (!packageName) {
