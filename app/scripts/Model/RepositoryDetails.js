@@ -1,8 +1,22 @@
 export default class RepositoryDetails {
 
-    constructor () {
+    constructor() {
         this.stargazersHistory = [];
         this.downloadsHistory = [];
+    }
+
+    clearData() {
+        this.stargazersHistory = [];
+        this.downloadsHistory = [];
+        this.clearResolvedData();
+        return this;
+    }
+
+    clearResolvedData() {
+        this.packageType = undefined;
+        this.packageName = undefined;
+        this.clearSessionData();
+        return this;
     }
 
     clearSessionData() {
@@ -21,7 +35,7 @@ export default class RepositoryDetails {
         }
     }
 
-    setStargazers (value, setPathFn) {
+    setStargazers(value, setPathFn) {
         if (value !== +value) {
             return;
         }
@@ -44,10 +58,9 @@ export default class RepositoryDetails {
         }
     }
 
-    updateDetails (setPathFn) {
+    updateDetails(setPathFn) {
         var GithubService = document.createElement('iron-meta').byKey('GithubService');
-        // return GithubService.getRepoDetails(this.owner.login, this.name).then(data => {
-        return GithubService.getRepoDetailsByFullName(this.full_name).then(data => {
+        return GithubService.getRepoDetails(this.full_name).then(data => {
             if (!data) {
                 return;
             }
@@ -62,30 +75,8 @@ export default class RepositoryDetails {
             return data;
         });
     }
-    
-    // updateDetails (setPathFn) {
-    //     var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
-    //     return searchProvider.getCityWeatherByID(this.id).then(data => {
-    //         console.log('asdf', data);
-    //         if (!data || !data.id) {
-    //             return;
-    //         }
-    //         Object.keys(data).forEach(key => {
-    //             var newProp = data[key];
-    //             if (this[key] !== newProp) {
-    //                 // this.set(`items.#${index}.${key}`, newProp);
-    //                 if (typeof setPathFn === 'function') {
-    //                     setPathFn(`.${key}`, newProp);
-    //                 } else {
-    //                     this[key] = newProp;
-    //                 }
-    //             }
-    //         });
-    //         return data;
-    //     });
-    // }
 
-    setDownloads (value, setPathFn) {
+    setDownloads(value, setPathFn) {
         if (value !== +value) {
             return;
         }
@@ -108,16 +99,53 @@ export default class RepositoryDetails {
         }
     }
 
-    updateDownloads (setPathFn) {
-        if (this.fork) {
-            // TODO: actually check the NPM package target
-            return Promise.resolve(0);
+    getPackageJsonName() {
+        if (this.packageType === 'package.json' && this.packageName) {
+            return Promise.resolve(this.packageName);
         }
+
+        if (this.packageType !== false && !this.packageType) {
+            var GithubService = document.createElement('iron-meta').byKey('GithubService');
+            return GithubService.getRepoContents(this.full_name, 'package.json')
+                .then(contentInfo => {
+                    if (contentInfo && contentInfo.type === 'file') {
+                        var packageJson = JSON.parse(atob(contentInfo.content));
+                        if (packageJson.name) {
+                            this.packageType = 'package.json';
+                            this.packageName = packageJson.name;
+                        }
+                    }
+                }).catch(err => {
+                    console.log(err);
+                    this.packageType = false;
+                });
+        }
+
+        return Promise.resolve();
+    }
+
+    updateDownloads(setPathFn) {
+        if (this.fork) {
+            return Promise.resolve();
+        }
+
         this.downloads_lastRequestDate = new Date();
-        var NpmService = document.createElement('iron-meta').byKey('NpmService');
-        return NpmService.getDownloadCountsLastMonth(this.name).then(dls => {
-            this.setDownloads(dls.downloads, setPathFn);
-            return dls;
+        
+        var packageNamePromise = this.getPackageJsonName().catch(() => {});
+
+        return packageNamePromise.then(packageName => {
+            if (!packageName) {
+                return;
+            }
+
+            if (this.packageType === 'package.json') {
+                var NpmService = document.createElement('iron-meta').byKey('NpmService');
+                return NpmService.getDownloadCountsLastMonth(packageName).then(dls => {
+                    this.setDownloads(dls.downloads, setPathFn);
+                    return dls;
+                });
+            }
         });
+
     }
 }

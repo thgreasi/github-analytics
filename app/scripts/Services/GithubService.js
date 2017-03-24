@@ -49,8 +49,12 @@ export class GithubService {
         });
     }
 
-    static getRepoDetails (username, reponame) {
-        return fetch(BASE_URL + `repos/${username}/${reponame}`).then(function (response) {
+    static getRepoDetails (fullname /* OR username, reponame */) {
+        fullname = arguments.length === 2 ? 
+            `${arguments[0]}/${arguments[1]}` :
+            fullname;
+
+        return fetch(BASE_URL + `repos/${fullname}`).then(function (response) {
             return response.json();
         }).then(repo => {
             // the only extras are: network_count & subscribers_count
@@ -61,12 +65,12 @@ export class GithubService {
         });
     }
 
-    static getRepoDetailsByFullName (fullName) {
-        return fetch(BASE_URL + `repos/${fullName}`).then(function (response) {
+
+    // app.GithubService.getRepoContents('thgreasi/ui-sortable', 'package.json').then(function(data){ console.log(data); })
+    static getRepoContents (fullname, path) {
+        // /repos/:owner/:repo/contents/:path
+        return fetch(BASE_URL + `repos/${fullname}/contents/${path}`).then(function (response) {
             return response.json();
-        }).then(repo => {
-            // the only extras are: network_count & subscribers_count
-            return Object.assign(new RepositoryDetails(), repo);
         }).catch(function (err) {
             console.log(err);
             return err;
