@@ -64,10 +64,7 @@
 	};
 
 	app.displayUpdatedToast = function () {
-	  // Check to make sure caching is actually enabled—it won't be in the dev environment.
-	  if (!Polymer.dom(document).querySelector('platinum-sw-cache').disabled) {
-	    Polymer.dom(document).querySelector('#caching-updated').show();
-	  }
+	  Polymer.dom(document).querySelector('#caching-updated').show();
 	};
 
 	function init() {
@@ -113,6 +110,22 @@
 	    }
 
 	    babelHelpers.createClass(RepositoryDetails, [{
+	        key: 'clearData',
+	        value: function clearData() {
+	            this.stargazersHistory = [];
+	            this.downloadsHistory = [];
+	            this.clearResolvedData();
+	            return this;
+	        }
+	    }, {
+	        key: 'clearResolvedData',
+	        value: function clearResolvedData() {
+	            this.packageType = undefined;
+	            this.packageName = undefined;
+	            this.clearSessionData();
+	            return this;
+	        }
+	    }, {
 	        key: 'clearSessionData',
 	        value: function clearSessionData() {
 	            this.stargazersDiff = null;
@@ -160,8 +173,7 @@
 	            var _this = this;
 
 	            var GithubService = document.createElement('iron-meta').byKey('GithubService');
-	            // return GithubService.getRepoDetails(this.owner.login, this.name).then(data => {
-	            return GithubService.getRepoDetailsByFullName(this.full_name).then(function (data) {
+	            return GithubService.getRepoDetails(this.full_name).then(function (data) {
 	                if (!data) {
 	                    return;
 	                }
@@ -175,29 +187,6 @@
 	                return data;
 	            });
 	        }
-
-	        // updateDetails (setPathFn) {
-	        //     var searchProvider = document.createElement('iron-meta').byKey('WeatherService');
-	        //     return searchProvider.getCityWeatherByID(this.id).then(data => {
-	        //         console.log('asdf', data);
-	        //         if (!data || !data.id) {
-	        //             return;
-	        //         }
-	        //         Object.keys(data).forEach(key => {
-	        //             var newProp = data[key];
-	        //             if (this[key] !== newProp) {
-	        //                 // this.set(`items.#${index}.${key}`, newProp);
-	        //                 if (typeof setPathFn === 'function') {
-	        //                     setPathFn(`.${key}`, newProp);
-	        //                 } else {
-	        //                     this[key] = newProp;
-	        //                 }
-	        //             }
-	        //         });
-	        //         return data;
-	        //     });
-	        // }
-
 	    }, {
 	        key: 'setDownloads',
 	        value: function setDownloads(value, setPathFn) {
@@ -223,19 +212,56 @@
 	            }
 	        }
 	    }, {
+	        key: 'getPackageJsonName',
+	        value: function getPackageJsonName() {
+	            if (this.packageType === 'package.json' && this.packageName) {
+	                return Promise.resolve(this.packageName);
+	            }
+
+	            if (this.packageType !== false && !this.packageType) {
+	                var GithubService = document.createElement('iron-meta').byKey('GithubService');
+	                return GithubService.getRepoContents(this.full_name, 'package.json').then(function (contentInfo) {
+	                    if (contentInfo && contentInfo.type === 'file') {
+	                        var packageJson = JSON.parse(atob(contentInfo.content));
+	                        return packageJson.name;
+	                    }
+	                });
+	            }
+
+	            return Promise.resolve();
+	        }
+	    }, {
 	        key: 'updateDownloads',
 	        value: function updateDownloads(setPathFn) {
 	            var _this2 = this;
 
 	            if (this.fork) {
-	                // TODO: actually check the NPM package target
-	                return Promise.resolve(0);
+	                return Promise.resolve();
 	            }
+
 	            this.downloads_lastRequestDate = new Date();
-	            var NpmService = document.createElement('iron-meta').byKey('NpmService');
-	            return NpmService.getDownloadCountsLastMonth(this.name).then(function (dls) {
-	                _this2.setDownloads(dls.downloads, setPathFn);
-	                return dls;
+
+	            var packageNamePromise = this.getPackageJsonName().then(function (packageName) {
+	                _this2._setProp('packageType', 'package.json', setPathFn);
+	                _this2._setProp('packageName', packageName, setPathFn);
+	                return packageName;
+	            }).catch(function (err) {
+	                console.error(err);
+	                _this2._setProp('packageType', false, setPathFn);
+	            });
+
+	            return packageNamePromise.then(function (packageName) {
+	                if (!packageName) {
+	                    return;
+	                }
+
+	                if (_this2.packageType === 'package.json') {
+	                    var NpmService = document.createElement('iron-meta').byKey('NpmService');
+	                    return NpmService.getDownloadCountsLastMonth(packageName).then(function (dls) {
+	                        _this2.setDownloads(dls.downloads, setPathFn);
+	                        return dls;
+	                    });
+	                }
 	            });
 	        }
 	    }]);
@@ -301,8 +327,10 @@
 	        }
 	    }, {
 	        key: 'getRepoDetails',
-	        value: function getRepoDetails(username, reponame) {
-	            return fetch(BASE_URL + ('repos/' + username + '/' + reponame)).then(function (response) {
+	        value: function getRepoDetails(fullname /* OR username, reponame */) {
+	            fullname = arguments.length === 2 ? arguments[0] + '/' + arguments[1] : fullname;
+
+	            return fetch(BASE_URL + ('repos/' + fullname)).then(function (response) {
 	                return response.json();
 	            }).then(function (repo) {
 	                // the only extras are: network_count & subscribers_count
@@ -312,14 +340,15 @@
 	                return err;
 	            });
 	        }
+
+	        // app.GithubService.getRepoContents('thgreasi/ui-sortable', 'package.json').then(function(data){ console.log(data); })
+
 	    }, {
-	        key: 'getRepoDetailsByFullName',
-	        value: function getRepoDetailsByFullName(fullName) {
-	            return fetch(BASE_URL + ('repos/' + fullName)).then(function (response) {
+	        key: 'getRepoContents',
+	        value: function getRepoContents(fullname, path) {
+	            // /repos/:owner/:repo/contents/:path
+	            return fetch(BASE_URL + ('repos/' + fullname + '/contents/' + path)).then(function (response) {
 	                return response.json();
-	            }).then(function (repo) {
-	                // the only extras are: network_count & subscribers_count
-	                return Object.assign(new RepositoryDetails(), repo);
 	            }).catch(function (err) {
 	                console.log(err);
 	                return err;
@@ -408,10 +437,12 @@
 	    return NpmService;
 	}();
 
+	app.debug = false;
+
 	localforage.config({
 		name: 'githubAnalytics'
 	});
-	console.log('localforage.config', localforage.config());
+	app.debug && console.log('localforage.config', localforage.config());
 
 	app.GithubService = GithubService;
 	app.NpmService = NpmService;
@@ -450,19 +481,19 @@
 	    return Object.assign(new RepositoryDetails(), repo).clearSessionData();
 	  });
 
-	  console.log('LOADED!', repos);
+	  app.debug && console.log('LOADED!', repos);
 	  return repos;
 	}).catch(function () {
 	  return [];
 	});
 
 	loadedPromise.then(function () {
-	  console.log('loadedPromise');
+	  app.debug && console.log('loadedPromise');
 	  return reposOnLoadPromise.then(function (repos) {
 	    // app.$.dataReposStorage.set('autoSaveDisabled', false);
 	    app.set('dataItemsLoaded', true);
 	    app.set('repos', repos);
-	    console.log('SET repos', repos);
+	    app.debug && console.log('SET repos', repos);
 
 	    if (repos && repos.length) {
 	      setTimeout(function () {

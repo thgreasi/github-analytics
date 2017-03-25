@@ -40,6 +40,11 @@
       savedRepos: {
         type: Array,
         notify: true
+      },
+
+      debug: {
+        type: Boolean,
+        notify: false
       }
     },
 
@@ -52,9 +57,11 @@
     },
 
     _searchTermChangedObserver: function _searchTermChangedObserver(newValue) {
+      var _this2 = this;
+
       var localforage = document.createElement('iron-meta').byKey('localforage');
       localforage.setItem('search.searchTerms.last', newValue).then(function () {
-        console.log('setItem(\'search.searchTerms.last\', ' + newValue + ') Saved!');
+        _this2.debug && console.log('setItem(\'search.searchTerms.last\', ' + newValue + ') Saved!');
       }).catch(function (e) {
         console.error('setItem(\'search.searchTerms.last\', ' + newValue + ') Error', e);
       });
@@ -65,19 +72,19 @@
     },
 
     ready: function ready() {
-      var _this2 = this;
+      var _this3 = this;
 
       this.$.searchForm.addEventListener('iron-form-presubmit', function (event) {
         event.preventDefault();
-        _this2.setSearchTerm();
+        _this3.setSearchTerm();
       });
 
       var localforage = document.createElement('iron-meta').byKey('localforage');
       localforage.getItem('search.searchTerms.last').then(function (lastValue) {
-        console.log('getItem(\'search.searchTerms.last\') => ' + lastValue);
-        _this2.set('searchTerm', lastValue || '');
-        _this2.set('searchTermTmp', lastValue || '');
-        _this2.$.searchInput.value = _this2.searchTermTmp;
+        _this3.debug && console.log('getItem(\'search.searchTerms.last\') => ' + lastValue);
+        _this3.set('searchTerm', lastValue || '');
+        _this3.set('searchTermTmp', lastValue || '');
+        _this3.$.searchInput.value = _this3.searchTermTmp;
       });
     }
   });

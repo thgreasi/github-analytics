@@ -31,6 +31,10 @@
         type: String,
         notify: true,
         computed: '_computeItemIcon(item)'
+      },
+      debug: {
+        type: Boolean,
+        notify: false
       }
     },
 
@@ -58,18 +62,17 @@
     //   return 0;
     // },
 
-    _itemChangedObserver: function _itemChangedObserver(newValue) {
+    _itemChangedObserver: function _itemChangedObserver(item) {
       var _this = this;
 
-      if (newValue && typeof newValue.updateDownloads === 'function') {
-        newValue.updateDownloads().then(function (dls) {
-          // console.log(`${this.item.name} dls:`,
-          //   this.item.downloads == dls.downloads ?
-          //     `${this.item.downloads}` :
-          //     `${this.item.downloads} -> ${dls.downloads}`,
-          //   ` historyLen: ${this.item.downloadsHistory && this.item.downloadsHistory.length}`);
-
-          _this.notifyPath('item.downloads', dls.downloads);
+      if (item && !item.downloadsHistory.length && typeof item.updateDownloads === 'function') {
+        // this seems to be a new item, so fetch its downloads
+        item.updateDownloads(function (subPath, value) {
+          var index = _this.items.indexOf(item);
+          if (index >= 0) {
+            _this.debug && console.log('Updating item' + subPath + ': ' + value);
+            _this.set('item' + subPath, value);
+          }
         });
       }
     },
