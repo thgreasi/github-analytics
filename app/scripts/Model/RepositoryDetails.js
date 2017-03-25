@@ -126,12 +126,12 @@ export default class RepositoryDetails {
         this.downloads_lastRequestDate = new Date();
         
         var packageNamePromise = this.getPackageJsonName().then(packageName => {
-            this.set('packageType', 'package.json');
-            this.set('packageName', packageName);
+            this._setProp('packageType', 'package.json', setPathFn);
+            this._setProp('packageName', packageName, setPathFn);
             return packageName;
         }).catch(err => {
             console.error(err);
-            this.set('packageType', false);
+            this._setProp('packageType', false, setPathFn);
         });
 
         return packageNamePromise.then(packageName => {
