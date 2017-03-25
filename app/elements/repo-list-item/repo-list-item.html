@@ -173,6 +173,10 @@
             type: String,
             notify: true,
             computed: '_computeItemIcon(item)'
+          },
+          debug: {
+            type: Boolean,
+            notify: false
           }
         },
 
@@ -200,17 +204,17 @@
         //   return 0;
         // },
 
-        _itemChangedObserver: function (newValue) {
-          if (newValue &&
-              typeof newValue.updateDownloads === 'function') {
-            newValue.updateDownloads().then((dls) => {
-              // console.log(`${this.item.name} dls:`,
-              //   this.item.downloads == dls.downloads ?
-              //     `${this.item.downloads}` :
-              //     `${this.item.downloads} -> ${dls.downloads}`,
-              //   ` historyLen: ${this.item.downloadsHistory && this.item.downloadsHistory.length}`);
-
-              this.notifyPath('item.downloads', dls.downloads);
+        _itemChangedObserver: function (item) {
+          if (item &&
+              !item.downloadsHistory.length &&
+              typeof item.updateDownloads === 'function') {
+            // this seems to be a new item, so fetch its downloads
+            item.updateDownloads((subPath, value) => {
+              let index = this.items.indexOf(item);
+              if (index >= 0) {
+                this.debug && console.log(`Updating item${subPath}: ${value}`);
+                this.set(`item${subPath}`, value);
+              }
             });
           }
         },
