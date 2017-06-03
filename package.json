@@ -49,7 +49,6 @@
     "node": ">=0.10.0"
   },
   "dependencies": {
-    "@reactivex/rxjs": "^5.0.0-beta.7",
     "localforage": "^1.4.2"
   }
 }
